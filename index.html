@@ -283,6 +283,9 @@
   .stop .lede { font-size: 1.1875rem; line-height: 1.55; color: var(--ink-2); max-width: 58ch; margin: 18px 0 0 46px; }
   .split { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 48px; align-items: start; margin-top: 34px; padding-left: 46px; }
   .split.narrow-fig { grid-template-columns: minmax(0, 7fr) minmax(0, 4fr); }
+  .split.even { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  /* beside a long list the figure rides along as you read, rather than ending halfway down */
+  .split:not(.stack) > figure.shot { position: sticky; top: 32px; }
   .split.stack { grid-template-columns: minmax(0, 1fr); gap: 36px; }
   .split.stack .rows { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 40px; border-top: 0; }
   .split.stack .rows > div { border-top: 1px solid var(--rule-strong); border-bottom: 0; }
@@ -293,6 +296,8 @@
   .keys { white-space: nowrap; } /* a shortcut never breaks across lines */
   kbd { font: inherit; font-weight: 650; font-size: 0.875rem; padding: 1px 7px; border-radius: 4px; border: 1px solid var(--rule-strong); border-bottom-width: 2px; background: var(--surface); color: var(--ink); white-space: nowrap; }
   .chip { display: inline-flex; align-items: center; height: 24px; padding: 0 9px; border-radius: 999px; background: var(--hover); color: var(--ink-2); font-size: 0.8125rem; font-weight: 650; margin: 2px 4px 2px 0; }
+  .chip.in-text { margin: 0; } /* inside a sentence the text's own spaces set the gaps, so punctuation sits tight */
+  .nowrap { white-space: nowrap; }
   .pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
   .pill { display: inline-flex; align-items: center; gap: 5px; height: 22px; padding: 0 8px 0 6px; border-radius: 999px; font-size: 0.78125rem; font-weight: 650; font-stretch: 87.5%; }
   .pill::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
@@ -340,7 +345,7 @@
   footer .credit { flex-basis: 100%; font-size: 0.8125rem; }
 
   @media (max-width: 1180px) {
-    .split, .split.narrow-fig, .consent { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+    .split, .split.narrow-fig, .split.even, .consent { grid-template-columns: minmax(0, 1fr); gap: 28px; }
     figure.popup { max-width: 380px; }
   }
   @media (max-width: 880px) {
@@ -528,12 +533,12 @@
       <section class="stop has-branch" id="find" style="--l: var(--cobalt)" aria-labelledby="find-h">
         <div class="stop-head"><div class="stop-name"><span class="ring" aria-hidden="true"></span><h2 id="find-h">Find anything again</h2></div></div>
         <p class="lede">You remember what a page said, not what it was called. Linemark searches the text of the pages you save, and shows you the passage that matched.</p>
-        <div class="split">
+        <div class="split even">
           <dl class="rows">
             <div><dt>Full text</dt><dd>Titles, tags, notes and the words on the page itself.</dd></div>
             <div><dt>Filters</dt><dd><span class="chip">#tag</span><span class="chip">site:</span><span class="chip">type:video</span><span class="chip">is:fav</span><span class="chip">is:broken</span></dd></div>
             <div><dt>Address bar</dt><dd>Type <kbd>lm</kbd> (lower-case L, M), then <kbd>Space</kbd>, to search Linemark from Chrome's address bar.</dd></div>
-            <div><dt>Smart lines</dt><dd>Keep a search, like <span class="chip">#tag</span> or <span class="chip">site:</span>, as a line that fills itself.</dd></div>
+            <div><dt>Smart lines</dt><dd>Keep a search, like <span class="chip in-text">#tag</span> or <span class="nowrap"><span class="chip in-text">site:</span>,</span> as a line that fills itself.</dd></div>
             <div><dt>Departures</dt><dd>Give a link a day to come back to, and it waits on the Departures board on that day.</dd></div>
             <div><dt>Five views</dt><dd>Cards, list, compact headlines, a moodboard, and a network map that draws your library as a transit map, each link a station in the shape of its kind.</dd></div>
             <div><dt>Make it yours</dt><dd>Give each line one of 240 built-in icons or any emoji, and recolour every line after London, Paris, Tokyo, New York, Berlin or Seoul.</dd></div>
