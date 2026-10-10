@@ -83,6 +83,8 @@
   <div class="table"><table>
     <tr><th scope="row">Saving a page</th><td>Linemark reads the open tab’s title, description, cover-image address and readable text, and takes a screenshot of the visible tab. All of this happens on your device. If the page names a cover image, Linemark downloads that image once from the site that hosts it and stores it locally.</td></tr>
     <tr><th scope="row">Link checks, previews, full-text indexing, Refresh (optional)</th><td>Chrome asks for site access first. Linemark then requests each saved page directly from its own website, much as your browser does when you visit it. Your cookies aren’t sent. The website sees an ordinary request from your browser, including your IP address.</td></tr>
+    <tr><th scope="row">Saving a highlight</th><td>Right-click on selected text, or open the toolbar popup with text selected: Linemark keeps that text with the page’s bookmark, on your device.</td></tr>
+    <tr><th scope="row">Saving an image</th><td>Right-click on an image: Linemark downloads that one image once from the site that hosts it and stores it locally, with the address of the page it was on.</td></tr>
     <tr><th scope="row">Optional sync</th><td>See <a href="#sync">Optional encrypted sync</a> below.</td></tr>
     <tr><th scope="row">Site icons</th><td>Linemark uses Chrome’s own local cache of site icons. No icon service is contacted.</td></tr>
     <tr><th scope="row">Find archived copy (optional)</th><td>On a dead link, only when you choose it: Linemark asks the Internet Archive (archive.org) whether it has a copy of that one link, which tells archive.org the link’s address. Nothing else is sent.</td></tr>
@@ -116,7 +118,7 @@
   <div class="table"><table>
     <tr><th scope="row"><code>storage</code>, <code>unlimitedStorage</code></th><td>Keep your library, covers and page text on your device</td></tr>
     <tr><th scope="row"><code>activeTab</code>, <code>scripting</code></th><td>Read the page you choose to save (title, description, cover, text) and take its screenshot</td></tr>
-    <tr><th scope="row"><code>contextMenus</code></th><td>Save page / Save link to Linemark in the right-click menu</td></tr>
+    <tr><th scope="row"><code>contextMenus</code></th><td>Save page, Save link, Save highlight and Save image to Linemark in the right-click menu</td></tr>
     <tr><th scope="row"><code>bookmarks</code></th><td>Import Chrome’s bookmarks when you ask (read only)</td></tr>
     <tr><th scope="row"><code>favicon</code></th><td>Show site icons from Chrome’s own cache</td></tr>
     <tr><th scope="row"><code>tabs</code> (optional)</th><td>Save all open tabs and save tab groups as lines, only when you use them</td></tr>
