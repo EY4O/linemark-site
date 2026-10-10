@@ -162,8 +162,10 @@
   const unit = (a) => { const l = Math.hypot(...a); return a.map((v) => v / l); };
   const persp = (fov, asp, n, f) => { const t = 1 / Math.tan(fov / 2), nf = 1 / (n - f); return [t / asp, 0, 0, 0, 0, t, 0, 0, 0, 0, (f + n) * nf, -1, 0, 0, 2 * f * n * nf, 0]; };
   const look = (e, c) => { const z = unit(sub(e, c)), x = unit(cross([0, 1, 0], z)), y = cross(z, x); return [x[0], y[0], z[0], 0, x[1], y[1], z[1], 0, x[2], y[2], z[2], 0, -dot(x, e), -dot(y, e), -dot(z, e), 1]; };
-  const mul = (a, b) => { const o = new Array(16); for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) { let s = 0; for (let k = 0; k < 4; k++) s += a[k * 4 + j] * b[i * 4 + k]; o[i * 4 + j] = s; } return o; };
-  const ID = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+  // matrices are written into these, so a running frame allocates nothing for them
+  const VP = new Float32Array(16), MODEL = new Float32Array(16);
+  const mulInto = (o, a, b) => { for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) { let s = 0; for (let k = 0; k < 4; k++) s += a[k * 4 + j] * b[i * 4 + k]; o[i * 4 + j] = s; } return o; };
+  const ID = new Float32Array([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
 
   // ---------- scene state ----------
   let W = null, D = null, B = null, colors = null;
@@ -211,7 +213,7 @@
     const dist = 64;
     const target = [3 + Math.sin(t * 0.05) * 3, 0, -1 + Math.cos(t * 0.04) * 2];
     const eye = [target[0] + dist * Math.cos(el) * Math.sin(yaw), dist * Math.sin(el), target[2] + dist * Math.cos(el) * Math.cos(yaw)];
-    gl.uniformMatrix4fv(U.uVP, false, mul(persp(0.52, w / h, 1, 200), look(eye, target)));
+    gl.uniformMatrix4fv(U.uVP, false, mulInto(VP, persp(0.52, w / h, 1, 200), look(eye, target)));
     gl.uniform3fv(U.uL, unit([0.35, 1, 0.25]));
     gl.uniform2f(U.uFog, dist - 4, dist + 34);
     gl.uniformMatrix4fv(U.uM, false, ID);
@@ -234,7 +236,8 @@
       const x = a[0] + (b[0] - a[0]) * f, z = a[1] + (b[1] - a[1]) * f;
       const dx = b[0] - a[0], dz = b[1] - a[1], L = Math.hypot(dx, dz) || 1;
       const c = dx / L, sn = -dz / L;
-      gl.uniformMatrix4fv(U.uM, false, [c, 0, -sn, 0, 0, 1, 0, 0, sn, 0, c, 0, x, 0, z, 1]);
+      MODEL.set([c, 0, -sn, 0, 0, 1, 0, 0, sn, 0, c, 0, x, 0, z, 1]);
+      gl.uniformMatrix4fv(U.uM, false, MODEL);
       gl.drawArrays(gl.TRIANGLES, 0, B.n);
     }
   }
@@ -243,7 +246,14 @@
   let visible = false, raf = 0, t0 = performance.now();
   const STILL_AT = 9; // the moment shown as a still picture
   const running = () => visible && !document.hidden && wide.matches && !still.matches;
-  function frame(now) { raf = 0; draw((now - t0) / 1000); if (running()) raf = requestAnimationFrame(frame); }
+  // the camera only drifts, so 30 frames a second is plenty, whatever the screen's refresh rate
+  const FRAME_MS = 1000 / 30;
+  let last = 0;
+  function frame(now) {
+    raf = 0;
+    if (now - last >= FRAME_MS - 2) { last = now; draw((now - t0) / 1000); }
+    if (running()) raf = requestAnimationFrame(frame);
+  }
   function sync() {
     if (!wide.matches) return;
     resize();

@@ -117,6 +117,11 @@
     .sign.has-scene .scene { display: block; position: absolute; right: 0; top: 0; width: 52%; height: calc(100% - 8px); -webkit-mask-image: linear-gradient(to right, transparent, #000 30%); mask-image: linear-gradient(to right, transparent, #000 30%); }
     .sign.has-scene > h1, .sign.has-scene > .lede, .sign.has-scene > .actions { position: relative; z-index: 1; max-width: 54%; }
   }
+  /* where the sign is narrowest, the scene fades in later and the lede steps in, so tracks never run up to the text */
+  @media (min-width: 1180px) and (max-width: 1299px) {
+    .sign.has-scene .scene { -webkit-mask-image: linear-gradient(to right, transparent 14%, #000 50%); mask-image: linear-gradient(to right, transparent 14%, #000 50%); }
+    .sign.has-scene > .lede { max-width: 50%; }
+  }
   .actions .aside { color: var(--ink-3); font-size: 0.9375rem; margin-left: 6px; }
   .stripe { position: absolute; left: 0; right: 0; bottom: 0; height: 8px; display: flex; overflow: hidden; }
   .stripe i { flex: 1; }
