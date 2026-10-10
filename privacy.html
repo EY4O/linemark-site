@@ -51,7 +51,7 @@
 <header><div class="wrap">
   <div class="brand"><span class="bullet" aria-hidden="true">L</span>Linemark</div>
   <h1>Privacy policy</h1>
-  <div class="meta">Effective 9 October 2026</div>
+  <div class="meta">Effective 10 October 2026</div>
 </div></header>
 
 <main class="wrap">
@@ -85,6 +85,9 @@
     <tr><th scope="row">Link checks, previews, full-text indexing, Refresh (optional)</th><td>Chrome asks for site access first. Linemark then requests each saved page directly from its own website, much as your browser does when you visit it. Your cookies aren’t sent. The website sees an ordinary request from your browser, including your IP address.</td></tr>
     <tr><th scope="row">Optional sync</th><td>See <a href="#sync">Optional encrypted sync</a> below.</td></tr>
     <tr><th scope="row">Site icons</th><td>Linemark uses Chrome’s own local cache of site icons. No icon service is contacted.</td></tr>
+    <tr><th scope="row">Find archived copy (optional)</th><td>On a dead link, only when you choose it: Linemark asks the Internet Archive (archive.org) whether it has a copy of that one link, which tells archive.org the link’s address. Nothing else is sent.</td></tr>
+    <tr><th scope="row">Suggestions (optional)</th><td>Only when you click Suggest: uses the AI model built into Chrome, which runs on your computer. The page’s title, address and text go to that local model only; nothing is sent over the network.</td></tr>
+    <tr><th scope="row">Tab groups (optional)</th><td><strong>Open as tab group</strong> opens a line’s links in a coloured Chrome tab group. <strong>Save as lines</strong> reads the titles, colours and tab addresses of the tab groups in your window, on your device, when you choose it.</td></tr>
   </table></div>
   <p>The library itself never loads anything from the web while you browse it. Fonts, icons and covers all come from the extension or from your local storage.</p>
 
@@ -116,8 +119,9 @@
     <tr><th scope="row"><code>contextMenus</code></th><td>Save page / Save link to Linemark in the right-click menu</td></tr>
     <tr><th scope="row"><code>bookmarks</code></th><td>Import Chrome’s bookmarks when you ask (read only)</td></tr>
     <tr><th scope="row"><code>favicon</code></th><td>Show site icons from Chrome’s own cache</td></tr>
-    <tr><th scope="row"><code>tabs</code> (optional)</th><td>Save all open tabs, only when you use it</td></tr>
-    <tr><th scope="row">Access to websites (optional)</th><td>Link checks, previews, full-text indexing and Refresh, only when you turn them on</td></tr>
+    <tr><th scope="row"><code>tabs</code> (optional)</th><td>Save all open tabs and save tab groups as lines, only when you use them</td></tr>
+    <tr><th scope="row"><code>tabGroups</code> (optional)</th><td>Open a line as a tab group, or save your tab groups as lines, only when you use them</td></tr>
+    <tr><th scope="row">Access to websites (optional)</th><td>Link checks, previews, full-text indexing and Refresh, only when you turn them on; archive.org, only when you choose <strong>Find archived copy</strong></td></tr>
     <tr><th scope="row"><code>identity</code> (optional)</th><td>Sign in to Google for optional sync, only when you set it up</td></tr>
   </table></div>
 
