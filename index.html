@@ -135,7 +135,14 @@
      system stops, the line tree (branches hang off a stem in their parent's colour) and the tags; beside it, the station
      sign, the view switch and the cards, built as the extension builds them. */
   .lib { margin-top: 20px; background: var(--ground); border: 1px solid var(--rule); border-radius: 10px; display: grid; grid-template-columns: 248px minmax(0, 1fr); overflow: hidden; box-shadow: var(--shadow-1); scroll-margin-top: 24px; }
-  .lines { background: var(--band); color: var(--band-ink); padding: 12px 10px 14px; display: flex; flex-direction: column; min-width: 0; }
+  .lines { background: var(--band); color: var(--band-ink); padding: 12px 10px 12px; display: flex; flex-direction: column; min-width: 0; }
+  /* On wide screens the library keeps one size, whichever station is open: the band and the cards scroll inside it. */
+  @media (min-width: 881px) {
+    .lib { height: 946px; }
+    .lines { overflow-y: auto; scrollbar-color: var(--band-rule) transparent; }
+    .work { min-height: 0; }
+    .pane { flex: 1; min-height: 0; overflow-y: auto; }
+  }
   .lines .group-label { font-size: 0.71875rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--band-ink-2); font-stretch: 87.5%; padding: 18px 10px 6px; }
   #sys, #lines { display: flex; flex-direction: column; gap: 1px; }
   .row { position: relative; display: flex; align-items: center; min-height: 36px; border-radius: 6px; transition: background-color .12s; }
@@ -773,9 +780,11 @@
     $cards.innerHTML = (cut ? list.slice(0, 6) : list).map((b) => card(b, words)).join('') + (cut ? `<button type="button" class="more" id="more">Show all ${list.length} sample bookmarks</button>` : '');
   }
 
+  const $pane = document.querySelector('.pane');
   function choose(id) {
     current = id;
     showAll = false;
+    $pane.scrollTop = 0;
     for (let l = byId[id]; l?.parent; l = byId[l.parent]) open.add(l.parent);
     const l = byId[id];
     $stripe.classList.remove('arrive', 'on');
