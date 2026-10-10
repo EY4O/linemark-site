@@ -136,9 +136,10 @@
      sign, the view switch and the cards, built as the extension builds them. */
   .lib { margin-top: 20px; background: var(--ground); border: 1px solid var(--rule); border-radius: 10px; display: grid; grid-template-columns: 248px minmax(0, 1fr); overflow: hidden; box-shadow: var(--shadow-1); scroll-margin-top: 24px; }
   .lines { background: var(--band); color: var(--band-ink); padding: 12px 10px 12px; display: flex; flex-direction: column; min-width: 0; }
-  /* On wide screens the library keeps one size, whichever station is open: the band and the cards scroll inside it. */
+  /* On wide screens the library keeps one size, whichever station is open: the band and the cards scroll inside it.
+     On a window shorter than that it takes the window's height less a margin, so all of it stays in view. */
   @media (min-width: 881px) {
-    .lib { height: 946px; }
+    .lib { height: clamp(560px, calc(100dvh - 48px), 946px); }
     .lines { overflow-y: auto; scrollbar-color: var(--band-rule) transparent; }
     .work { min-height: 0; }
     .pane { flex: 1; min-height: 0; overflow-y: auto; }
@@ -391,6 +392,8 @@
   @media (pointer: coarse), (max-width: 880px) {
     .tries button, .more, .ln, .fchip, .tag-pill, .seg button { min-height: 44px; }
     .twisty { width: 32px; height: 32px; margin-left: 0; }
+    .twisty::before { content: ''; position: absolute; inset: -6px; } /* a 44px tap area around the 32px chevron */
+    .seg button { min-width: 44px; }
     .here-path button { min-height: 32px; }
     .search input { height: 46px; }
     .path a { min-height: 44px; }
