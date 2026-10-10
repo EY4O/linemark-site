@@ -81,6 +81,14 @@
   .route { list-style: none; padding: 0; margin: 40px 0 0; position: relative; }
   /* The trunk is Linemark orange; each stop is an interchange in its own line colour, and branches hang off a stem in their parent's colour, as sub-lines do in the app. */
   .route::before { content: ''; position: absolute; left: 14px; top: 24px; bottom: 24px; width: 5px; border-radius: 2px; background: var(--brand); z-index: 1; }
+  /* The route draws itself: once the page script runs, the trunk is laid dim and fills in orange behind the train as you read,
+     and the stops still ahead wait with their rings dimmed. Without the script, the whole route is simply drawn. */
+  .route.live::before { background: var(--band-rule); }
+  .route.live::after { content: ''; position: absolute; left: 14px; top: 24px; width: 5px; height: var(--fill, 0px); border-radius: 2px; background: var(--brand); z-index: 1; transition: height .55s var(--ease); }
+  .route.live a:not(.passed) .dot { border-color: color-mix(in srgb, var(--l, var(--brand)) 38%, var(--band)); }
+  .route.live .branch::before { transition: opacity .4s; }
+  .route.live li:not(.reached) > .branch::before { opacity: .38; }
+  .route .dot { transition: border-color .4s; }
   .route a { position: relative; display: flex; align-items: center; gap: 16px; height: 48px; padding: 0 10px 0 4px; border-radius: 6px; text-decoration: none; font-weight: 650; font-stretch: 87.5%; color: var(--band-ink); transition: background-color .2s; }
   .route a:hover { background: var(--band-hover); }
   .route a[aria-current] { background: var(--band-active); }
@@ -102,6 +110,13 @@
   .sign h1 { font-size: clamp(3rem, 6.2vw, 5.75rem); line-height: 0.96; font-weight: 780; font-stretch: 80%; letter-spacing: -0.03em; text-wrap: balance; }
   .sign .lede { font-size: 1.25rem; line-height: 1.5; color: var(--ink-2); max-width: 48ch; margin-top: 18px; }
   .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; align-items: center; }
+  /* The scene: a small 3D network running beside the sign on wide screens (hero.js); the text keeps the left side. */
+  .scene { display: none; }
+  @media (min-width: 1180px) {
+    .sign.has-scene { min-height: 470px; }
+    .sign.has-scene .scene { display: block; position: absolute; right: 0; top: 0; width: 52%; height: calc(100% - 8px); -webkit-mask-image: linear-gradient(to right, transparent, #000 30%); mask-image: linear-gradient(to right, transparent, #000 30%); }
+    .sign.has-scene > h1, .sign.has-scene > .lede, .sign.has-scene > .actions { position: relative; z-index: 1; max-width: 54%; }
+  }
   .actions .aside { color: var(--ink-3); font-size: 0.9375rem; margin-left: 6px; }
   .stripe { position: absolute; left: 0; right: 0; bottom: 0; height: 8px; display: flex; overflow: hidden; }
   .stripe i { flex: 1; }
@@ -290,8 +305,21 @@
     footer { row-gap: 0; }
     footer a { display: inline-flex; align-items: center; min-height: 44px; }
   }
+  /* As each stop arrives, its rule draws across in the line's colour, and on phones the route draws down through it. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .stop-head { position: relative; border-bottom-color: transparent; }
+      .stop-head::after { content: ''; position: absolute; left: 0; right: 0; bottom: -4px; height: 4px; background: var(--l, var(--brand)); transform-origin: left; animation: draw-x linear both; animation-timeline: view(); animation-range: entry 60% cover 40%; }
+      @keyframes draw-x { from { transform: scaleX(0); } }
+      @media (max-width: 880px) {
+        .stop::before, .has-branch::after { transform-origin: top; animation: draw-y linear both; animation-timeline: view(); animation-range: entry 0% cover 55%; }
+        @keyframes draw-y { from { transform: scaleY(0); } }
+      }
+    }
+  }
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
+    .route.live::after, .route .dot { transition: none; }
     .route .train { transition: opacity .3s; }
     .stripe .sweep { transform: none; opacity: 0; transition: opacity .4s; }
     .stripe.on .sweep { opacity: 1; }
@@ -339,6 +367,7 @@
           <a class="btn btn-p" href="https://chromewebstore.google.com/detail/laapaiiaipeoilipnbhpjmjbdkomhjln" rel="noopener">Add to Chrome</a>
           <a class="btn btn-s" href="privacy.html">Privacy policy</a>
         </div>
+        <canvas class="scene" id="scene" aria-hidden="true"></canvas>
         <div class="stripe arrive" id="stripe" aria-hidden="true"><i style="background:var(--brand)"></i><i style="background:var(--cobalt)"></i><i style="background:var(--magenta)"></i><i style="background:var(--teal)"></i><i style="background:var(--amber)"></i><span class="sweep"></span></div>
       </header>
 
@@ -600,13 +629,21 @@
   const links = [...route.querySelectorAll('a')];
   const sections = links.map((a) => document.querySelector(a.getAttribute('href')));
   let at = -1;
+  route.classList.add('live');
   function setStop(i) {
     if (i === at) return;
     at = i;
-    links.forEach((a, k) => (k === i ? a.setAttribute('aria-current', 'location') : a.removeAttribute('aria-current')));
+    links.forEach((a, k) => {
+      if (k === i) a.setAttribute('aria-current', 'location'); else a.removeAttribute('aria-current');
+      a.classList.toggle('passed', k <= i);
+      a.parentElement.classList.toggle('reached', k < i);
+    });
     const r = route.getBoundingClientRect(), d = links[i].querySelector('.dot').getBoundingClientRect();
     train.style.setProperty('--x', `${d.left - r.left - 4}px`);
     train.style.setProperty('--y', `${d.top - r.top - 12}px`);
+    // the trunk fills to the train; on a branch it stops at the parent stop and the branch's stem carries on
+    const trunk = (links[i].closest('.branch')?.parentElement.querySelector(':scope > a .dot') || links[i].querySelector('.dot')).getBoundingClientRect();
+    route.style.setProperty('--fill', `${Math.max(0, trunk.top - r.top + 12 - 24)}px`);
     train.style.setProperty('--tl', getComputedStyle(links[i]).getPropertyValue('--l'));
   }
   function locate() {
@@ -622,5 +659,6 @@
   locate();
 })();
 </script>
+<script src="hero.js" defer></script>
 </body>
 </html>
