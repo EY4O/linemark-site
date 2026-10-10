@@ -307,6 +307,15 @@
   figure.shot img { border-radius: 10px; border: 1px solid var(--rule); box-shadow: var(--shadow-2); }
   figure.shot figcaption { color: var(--ink-3); font-size: 0.875rem; margin-top: 12px; }
   figure.popup img { max-width: 380px; width: 100%; }
+  /* Pointing at a row shows its picture in the figure beside the list (wide screens with a mouse only). The script
+     adds the pictures as the list comes near, from docs/images/home/ (made by tools/home-shots.mjs). */
+  figure.shot .stage { position: relative; }
+  figure.popup .stage { max-width: 380px; }
+  figure.shot .stage img.alt { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity .24s var(--ease); pointer-events: none; }
+  figure.shot .stage img.alt.on { opacity: 1; }
+  .rows.swap.live > div { transition: background-color .15s; }
+  .rows.swap.live > div.on { background: var(--hover); box-shadow: -12px 0 0 var(--hover), 12px 0 0 var(--hover); }
+  @media (prefers-reduced-motion: reduce) { figure.shot .stage img.alt, .rows.swap.live > div { transition: none; } }
 
   /* Timetable rows for privacy facts */
   .table { margin: 34px 0 0 46px; background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; }
@@ -512,19 +521,19 @@
         <div class="stop-head"><div class="stop-name"><span class="ring" aria-hidden="true"></span><h2 id="save-h">Save in one gesture</h2></div></div>
         <p class="lede">Saving takes one click. Linemark keeps the page's title, description and a cover image, stored on your computer. Filing can wait: new saves go to <strong>Unsorted</strong> until you put them on a line.</p>
         <div class="split narrow-fig">
-          <dl class="rows">
-            <div><dt>Toolbar button</dt><dd>Saves the page you're on, then lets you pick a line, add tags or a note.</dd></div>
-            <div><dt>Keyboard</dt><dd><span class="keys"><kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd></span> saves it without touching the mouse.<br><span class="keys"><kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>L</kbd></span> opens your library.</dd></div>
-            <div><dt>Right-click</dt><dd><strong>Save to Linemark</strong> works on any page, and on any link inside one.</dd></div>
-            <div><dt>Lines and branches</dt><dd>Type <kbd>Cooking/Baking</kbd> in the line picker to file a link straight onto a new Baking branch under Cooking.</dd></div>
-            <div><dt>Highlights and images</dt><dd>Right-click selected text to keep it as a highlight of the page, or right-click an image to save it, stored on your computer with the page it came from.</dd></div>
-            <div><dt>Several lines</dt><dd>A link can stop on several lines at once, like an interchange.</dd></div>
-            <div><dt>Tabs and tab groups</dt><dd>Save a whole window of research in one go, keep its tab groups as lines, or open a line as a tab group in its colour.</dd></div>
-            <div><dt>Suggestions</dt><dd>Where Chrome offers its built-in AI, Linemark can suggest a line, tags and a summary, worked out on your computer.</dd></div>
-            <div><dt>Chrome bookmarks</dt><dd>Import them in one click. Folders become lines.</dd></div>
+          <dl class="rows swap">
+            <div data-shot="default"><dt>Toolbar button</dt><dd>Saves the page you're on, then lets you pick a line, add tags or a note.</dd></div>
+            <div data-shot="keyboard"><dt>Keyboard</dt><dd><span class="keys"><kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd></span> saves it without touching the mouse.<br><span class="keys"><kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>L</kbd></span> opens your library.</dd></div>
+            <div data-shot="rightclick"><dt>Right-click</dt><dd><strong>Save to Linemark</strong> works on any page, and on any link inside one.</dd></div>
+            <div data-shot="branches"><dt>Lines and branches</dt><dd>Type <kbd>Cooking/Baking</kbd> in the line picker to file a link straight onto a new Baking branch under Cooking.</dd></div>
+            <div data-shot="highlights"><dt>Highlights and images</dt><dd>Right-click selected text to keep it as a highlight of the page, or right-click an image to save it, stored on your computer with the page it came from.</dd></div>
+            <div data-shot="lines"><dt>Several lines</dt><dd>A link can stop on several lines at once, like an interchange.</dd></div>
+            <div data-shot="tabs"><dt>Tabs and tab groups</dt><dd>Save a whole window of research in one go, keep its tab groups as lines, or open a line as a tab group in its colour.</dd></div>
+            <div data-shot="suggest"><dt>Suggestions</dt><dd>Where Chrome offers its built-in AI, Linemark can suggest a line, tags and a summary, worked out on your computer.</dd></div>
+            <div data-shot="import"><dt>Chrome bookmarks</dt><dd>Import them in one click. Folders become lines.</dd></div>
           </dl>
-          <figure class="shot popup">
-            <img src="images/popup.png" width="380" height="390" alt="The Linemark popup after saving a page: a cover preview, the page title, fields for tags and a note, and a Done button." loading="lazy">
+          <figure class="shot popup" data-swap="save">
+            <div class="stage"><img src="images/popup.png" width="380" height="390" alt="The Linemark popup after saving a page: a cover preview, the page title, fields for tags and a note, and a Done button." loading="lazy"></div>
             <figcaption>The popup that opens when you save a page.</figcaption>
           </figure>
         </div>
@@ -534,18 +543,18 @@
         <div class="stop-head"><div class="stop-name"><span class="ring" aria-hidden="true"></span><h2 id="find-h">Find anything again</h2></div></div>
         <p class="lede">You remember what a page said, not what it was called. Linemark searches the text of the pages you save, and shows you the passage that matched.</p>
         <div class="split even">
-          <dl class="rows">
-            <div><dt>Full text</dt><dd>Titles, tags, notes and the words on the page itself.</dd></div>
-            <div><dt>Filters</dt><dd><span class="chip">#tag</span><span class="chip">site:</span><span class="chip">type:video</span><span class="chip">is:fav</span><span class="chip">is:broken</span></dd></div>
-            <div><dt>Address bar</dt><dd>Type <kbd>lm</kbd> (lower-case L, M), then <kbd>Space</kbd>, to search Linemark from Chrome's address bar.</dd></div>
-            <div><dt>Smart lines</dt><dd>Keep a search, like <span class="chip in-text">#tag</span> or <span class="nowrap"><span class="chip in-text">site:</span>,</span> as a line that fills itself.</dd></div>
-            <div><dt>Departures</dt><dd>Give a link a day to come back to, and it waits on the Departures board on that day.</dd></div>
-            <div><dt>Five views</dt><dd>Cards, list, compact headlines, a moodboard, and a network map that draws your library as a transit map, each link a station in the shape of its kind.</dd></div>
-            <div><dt>Make it yours</dt><dd>Give each line one of 240 built-in icons or any emoji, and recolour every line after London, Paris, Tokyo, New York, Berlin or Seoul.</dd></div>
-            <div><dt>Your year</dt><dd>Linemark Wrapped shows your year on the lines, month by month, with a picture to share.</dd></div>
+          <dl class="rows swap">
+            <div data-shot="default"><dt>Full text</dt><dd>Titles, tags, notes and the words on the page itself.</dd></div>
+            <div data-shot="filters"><dt>Filters</dt><dd><span class="chip">#tag</span><span class="chip">site:</span><span class="chip">type:video</span><span class="chip">is:fav</span><span class="chip">is:broken</span></dd></div>
+            <div data-shot="omnibox"><dt>Address bar</dt><dd>Type <kbd>lm</kbd> (lower-case L, M), then <kbd>Space</kbd>, to search Linemark from Chrome's address bar.</dd></div>
+            <div data-shot="smart"><dt>Smart lines</dt><dd>Keep a search, like <span class="chip in-text">#tag</span> or <span class="nowrap"><span class="chip in-text">site:</span>,</span> as a line that fills itself.</dd></div>
+            <div data-shot="departures"><dt>Departures</dt><dd>Give a link a day to come back to, and it waits on the Departures board on that day.</dd></div>
+            <div data-shot="views"><dt>Five views</dt><dd>Cards, list, compact headlines, a moodboard, and a network map that draws your library as a transit map, each link a station in the shape of its kind.</dd></div>
+            <div data-shot="yours"><dt>Make it yours</dt><dd>Give each line one of 240 built-in icons or any emoji, and recolour every line after London, Paris, Tokyo, New York, Berlin or Seoul.</dd></div>
+            <div data-shot="year"><dt>Your year</dt><dd>Linemark Wrapped shows your year on the lines, month by month, with a picture to share.</dd></div>
           </dl>
-          <figure class="shot">
-            <picture><source media="(max-width: 880px)" srcset="images/home-search-sm.png" width="332" height="365"><img src="images/home-search.png" width="665" height="500" alt="Linemark in its dark theme, searching for the word grid: matching bookmarks show the passage from the page where the word appears." loading="lazy"></picture>
+          <figure class="shot" data-swap="find">
+            <div class="stage"><picture><source media="(max-width: 880px)" srcset="images/home-search-sm.png" width="332" height="365"><img src="images/home-search.png" width="665" height="500" alt="Linemark in its dark theme, searching for the word grid: matching bookmarks show the passage from the page where the word appears." loading="lazy"></picture></div>
             <figcaption>Searching for "grid" finds pages that mention it, and shows where.</figcaption>
           </figure>
         </div>
@@ -858,6 +867,61 @@
   window.addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(() => { ticking = false; locate(); }); } }, { passive: true });
   window.addEventListener('resize', () => { at = -1; locate(); });
   locate();
+})();
+</script>
+<script>
+// Hover pictures for the Save and Find lists: pointing at a row shows its picture in the figure beside the list.
+// Only where there is a mouse and the figure sits beside the list; the pictures load as the list comes near.
+(() => {
+  const able = matchMedia('(hover: hover) and (pointer: fine) and (min-width: 1181px)');
+  const S = (src, cap) => ({ src: `images/home/${src}.webp`, cap });
+  const SHOTS = {
+    keyboard: S('save-keyboard', 'Two shortcuts: save the page you’re on, or open your library.'),
+    rightclick: S('save-rightclick', 'Chrome’s right-click menu, with Save page to Linemark.'),
+    branches: S('save-branches', 'Typing Cooking/Baking makes a Baking branch under Cooking.'),
+    highlights: S('save-highlights', 'Text selected on a page, kept as a highlight of it.'),
+    lines: S('save-lines', 'A link on three lines carries each line’s bullet.'),
+    tabs: S('save-tabs', 'A line’s menu: open its links as a tab group in its colour.'),
+    suggest: S('save-suggest', 'Suggestions from Chrome’s built-in AI: a line, tags and a summary.'),
+    import: S('save-import', 'Settings: import your Chrome bookmarks, or keep tab groups as lines.'),
+    filters: S('find-filters', 'A tag has its own stop: every link tagged #japan.'),
+    omnibox: S('find-omnibox', 'Type lm and Space in the address bar to search Linemark.'),
+    smart: S('find-smart', 'A smart line keeps the search type:video, and fills itself.'),
+    departures: S('find-departures', 'Links due back today wait on the Departures board.'),
+    views: S('find-views', 'The network map: each link a station on its lines, in the shape of its kind.'),
+    yours: S('find-yours', 'Line colours after a city’s transit map, here Tokyo.'),
+    year: S('find-year', 'Wrapped: your year on the lines, month by month.'),
+  };
+  for (const fig of document.querySelectorAll('figure[data-swap]')) {
+    const list = fig.closest('.split').querySelector('.rows.swap');
+    const stage = fig.querySelector('.stage'), cap = fig.querySelector('figcaption'), base = cap.textContent;
+    const box = stage.querySelector('img'), imgs = new Map();
+    let leave = 0;
+    const load = () => {
+      for (const row of list.querySelectorAll('[data-shot]')) {
+        const k = row.dataset.shot;
+        if (!SHOTS[k] || imgs.has(k)) continue;
+        const i = new Image();
+        i.className = 'alt'; i.alt = ''; i.decoding = 'async';
+        i.width = box.width; i.height = box.height; i.src = SHOTS[k].src;
+        stage.append(i); imgs.set(k, i);
+      }
+    };
+    const show = (k) => {
+      clearTimeout(leave);
+      for (const [key, i] of imgs) i.classList.toggle('on', key === k);
+      for (const row of list.querySelectorAll('[data-shot]')) row.classList.toggle('on', row.dataset.shot === k);
+      cap.textContent = SHOTS[k]?.cap || base;
+    };
+    list.addEventListener('pointerover', (e) => {
+      if (!able.matches || e.pointerType !== 'mouse') return;
+      const row = e.target.closest('[data-shot]');
+      if (row) { load(); list.classList.add('live'); show(row.dataset.shot); }
+    });
+    list.addEventListener('pointerleave', () => { leave = setTimeout(() => show(null), 200); });
+    able.addEventListener('change', () => { if (!able.matches) show(null); });
+    new IntersectionObserver((es, io) => { if (es.some((e) => e.isIntersecting) && able.matches) { load(); io.disconnect(); } }, { rootMargin: '600px 0px' }).observe(list);
+  }
 })();
 </script>
 <script src="hero.js" defer></script>
