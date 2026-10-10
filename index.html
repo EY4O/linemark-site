@@ -121,6 +121,9 @@
   .ln[aria-pressed='true'] { background: var(--band-active); }
   .ln[aria-pressed='true'] .b { box-shadow: 0 0 0 2px var(--band-active), 0 0 0 4px var(--band-ink); }
   .ln .b { width: 24px; height: 24px; font-size: 0.6875rem; }
+  .ln.branch { position: relative; margin-left: 22px; width: calc(100% - 22px); }
+  .ln.branch::before { content: ''; position: absolute; left: -11px; top: -8px; width: 13px; height: 27px; border-left: 3px solid var(--stem); border-bottom: 3px solid var(--stem); border-bottom-left-radius: 6px; opacity: 0.85; }
+  .here-path { color: var(--ink-3); font-weight: 650; font-size: 0.75em; font-stretch: 87.5%; letter-spacing: 0; }
   .ln .n { margin-left: auto; color: var(--band-ink-2); font-size: 0.8125rem; font-weight: 500; }
   .lines .hint { margin-top: auto; padding: 14px 10px 4px; color: var(--band-ink-2); font-size: 0.8125rem; line-height: 1.45; }
   .work { padding: 18px 20px 22px; min-width: 0; }
@@ -251,6 +254,8 @@
     .lines { flex-direction: row; overflow-x: auto; padding: 10px; gap: 4px; }
     .lines .group-label, .lines .hint { display: none; }
     #lines { flex-direction: row; }
+    .ln.branch { margin-left: 0; width: auto; }
+    .ln.branch::before { display: none; }
     .ln { flex: none; width: auto; padding: 0 12px 0 8px; }
     .work { padding: 14px 14px 18px; }
     .sample { display: none; }
@@ -367,6 +372,7 @@
             <div><dt>Toolbar button</dt><dd>Saves the page you're on, then lets you pick a line, add tags or a note.</dd></div>
             <div><dt>Keyboard</dt><dd><kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd> saves it without touching the mouse. <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>L</kbd> opens your library.</dd></div>
             <div><dt>Right-click</dt><dd><strong>Save to Linemark</strong> works on any page, and on any link inside one.</dd></div>
+            <div><dt>Lines and branches</dt><dd>Type <kbd>Videos/Markiplier</kbd> in the line picker to file a link on a new branch in one step.</dd></div>
             <div><dt>All open tabs</dt><dd>Save a whole window of research in one go.</dd></div>
             <div><dt>Chrome bookmarks</dt><dd>Import them in one click. Folders become lines.</dd></div>
           </dl>
@@ -473,15 +479,16 @@
   const LINES = [
     { id: 'all', name: 'All bookmarks', color: 'var(--brand)', ink: 'var(--brand-ink)', face: { text: 'L' } },
     { id: 'reading', name: 'Reading', color: 'var(--cobalt)', ink: 'var(--on-line)', face: { icon: 'book-open' } },
+    { id: 'type', name: 'Typography', parent: 'reading', color: 'var(--green)', ink: 'var(--brand-ink)', face: { text: 'Ty' } },
     { id: 'design', name: 'Design', color: 'var(--magenta)', ink: 'var(--on-line)', face: { text: 'De' } },
     { id: 'travel', name: 'Travel', color: 'var(--teal)', ink: 'var(--on-line)', face: { icon: 'train-front' } },
     { id: 'cooking', name: 'Cooking', color: 'var(--amber)', ink: 'var(--brand-ink)', face: { icon: 'chef-hat' } },
     { id: 'work', name: 'Work', color: 'var(--violet)', ink: 'var(--on-line)', face: { emoji: '🗂️' } },
   ];
   const BOOKMARKS = [
-    { line: 'reading', title: "Butterick's Practical Typography", url: 'https://practicaltypography.com/', tags: ['type'], text: 'A free online guide to typography for writers, covering point size, line length, line spacing and choosing fonts.' },
+    { line: 'type', title: "Butterick's Practical Typography", url: 'https://practicaltypography.com/', tags: ['type'], text: 'A free online guide to typography for writers, covering point size, line length, line spacing and choosing fonts.' },
     { line: 'reading', title: 'Local-first software', url: 'https://www.inkandswitch.com/local-first/', tags: ['essays', 'sync'], text: 'An essay on apps that keep your data on your own device and still collaborate and sync without a server in charge.' },
-    { line: 'reading', title: 'The Elements of Typographic Style Applied to the Web', url: 'http://webtypography.net/', tags: ['type', 'web'], text: 'Classic typographic rules translated into HTML and CSS: rhythm, measure, and setting text that reads well.' },
+    { line: 'type', title: 'The Elements of Typographic Style Applied to the Web', url: 'http://webtypography.net/', tags: ['type', 'web'], text: 'Classic typographic rules translated into HTML and CSS: rhythm, measure, and setting text that reads well.' },
     { line: 'design', title: 'Refactoring UI', url: 'https://www.refactoringui.com/', tags: ['ui'], text: 'Practical tactics for interface design: visual hierarchy, spacing systems, choosing colours and adding depth.' },
     { line: 'design', title: 'Lucide icons', url: 'https://lucide.dev/', tags: ['icons'], text: 'An open-source icon set drawn on one consistent stroke. The line icons in Linemark come from it.' },
     { line: 'design', title: 'Transit Maps', url: 'https://transitmap.net/', tags: ['maps', 'type'], text: 'A long-running blog reviewing transit maps from cities around the world, official and fan-made.' },
@@ -514,7 +521,7 @@
   let showAll = false;
   const narrow = window.matchMedia('(max-width: 880px)');
 
-  $lines.innerHTML = LINES.map((l) => `<button type="button" class="ln" data-line="${l.id}" aria-pressed="${l.id === current}">${bullet(l)}<span>${esc(l.name)}</span><span class="n tnum">${count(l.id)}</span></button>`).join('');
+  $lines.innerHTML = LINES.map((l) => `<button type="button" class="ln${l.parent ? ' branch' : ''}" data-line="${l.id}" aria-pressed="${l.id === current}"${l.parent ? ` style="--stem:${byId[l.parent].color}" aria-label="${esc(byId[l.parent].name)} › ${esc(l.name)}, ${count(l.id)}"` : ''}>${bullet(l)}<span>${esc(l.name)}</span><span class="n tnum">${count(l.id)}</span></button>`).join('');
 
   const terms = (q) => q.toLowerCase().split(/\s+/).filter(Boolean);
   const mark = (text, words) => {
@@ -548,8 +555,9 @@
       return words.every((w) => hay.includes(w));
     });
     const summary = raw ? `${list.length} of ${count(current)} match` : `${list.length} bookmark${list.length === 1 ? '' : 's'}`;
-    $here.innerHTML = `${bullet(line)}<h3>${esc(line.name)}</h3><p class="tnum">${summary}</p>`;
-    $status.textContent = `${line.name}: ${summary}`;
+    const parent = line.parent ? byId[line.parent] : null;
+    $here.innerHTML = `${bullet(line)}<h3>${parent ? `<span class="here-path">${esc(parent.name)} ›</span> ` : ''}${esc(line.name)}</h3><p class="tnum">${summary}</p>`;
+    $status.textContent = `${parent ? parent.name + ' › ' : ''}${line.name}: ${summary}`;
     if (!list.length) {
       $cards.innerHTML = `<div class="empty"><strong>No sample bookmarks match “${esc(raw)}”.</strong>Try “sleeper train” or #type, or choose All bookmarks.</div>`;
       return;
