@@ -1,6 +1,571 @@
 <!doctype html>
+<html lang="en">
+<head>
 <meta charset="utf-8">
-<title>Linemark</title>
-<meta http-equiv="refresh" content="0; url=privacy.html">
-<link rel="canonical" href="privacy.html">
-<p><a href="privacy.html">Linemark privacy policy</a></p>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Linemark · Bookmarks on lines</title>
+<meta name="description" content="Linemark is a bookmark manager for Chrome. Your bookmarks sit on colour-coded lines, full-text search finds any page by its words, and a link checker catches broken links. Local by default; sync optional.">
+<meta property="og:title" content="Linemark · Bookmarks on lines">
+<meta property="og:description" content="A bookmark manager for Chrome, drawn like a transit map. Local by default; sync optional.">
+<meta property="og:image" content="https://ey4o.github.io/linemark-site/images/og.png">
+<meta property="og:type" content="website">
+<link rel="icon" href="images/icon.png">
+<style>
+  @font-face { font-family: 'Archivo'; src: url('fonts/archivo-wdth.woff2') format('woff2'); font-weight: 100 900; font-stretch: 62% 125%; font-display: swap; }
+  :root {
+    color-scheme: light;
+    --ink: #16171a; --ink-2: #474a51; --ink-3: #686b73;
+    --ground: #f2f2ef; --surface: #ffffff; --surface-2: #f7f7f5; --hover: #efefeb; --rule: #e3e3df; --rule-strong: #cdcdc7;
+    --band: #16171a; --band-ink: #f4f3ef; --band-ink-2: #a8aab0; --band-rule: #2b2d32; --band-hover: #222429; --band-active: #2e3037;
+    --brand: #ff5a1f; --brand-hover: #ff6f3a; --brand-ink: #16171a; --brand-text: #c23c0b; --brand-soft: rgba(255, 90, 31, 0.13);
+    --danger: #c4282f; --danger-soft: rgba(196, 40, 47, 0.1); --warn-ink: #8a5a00; --warn-soft: rgba(240, 168, 0, 0.17);
+    --tile: rgba(255, 255, 255, 0.94); --on-color-rule: rgba(0, 0, 0, 0.12);
+    --cobalt: #2f5bd8; --magenta: #c2255c; --teal: #0b7a75; --amber: #f0a800; --violet: #7048e8;
+    --shadow-1: 0 1px 2px rgba(22, 23, 26, 0.06);
+    --shadow-2: 0 8px 18px -6px rgba(22, 23, 26, 0.16), 0 2px 4px rgba(22, 23, 26, 0.06);
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    --font: 'Archivo', 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --ink: #ecebe7; --ink-2: #c0c2c7; --ink-3: #9a9da5;
+      --ground: #0f1012; --surface: #18191c; --surface-2: #1d1f23; --hover: #24262b; --rule: #2a2c31; --rule-strong: #3b3e45;
+      --band: #08090a; --band-rule: #1e2024; --band-hover: #16171a; --band-active: #1f2125;
+      --brand-text: #ff7d4a; --brand-soft: rgba(255, 90, 31, 0.18);
+      --danger: #ff6b6b; --danger-soft: rgba(255, 107, 107, 0.12); --warn-ink: #f5c34d; --warn-soft: rgba(240, 168, 0, 0.14);
+      --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+      --shadow-2: 0 10px 22px -8px rgba(0, 0, 0, 0.6), 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  body { margin: 0; background: var(--ground); color: var(--ink); font-family: var(--font); font-size: 1rem; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  ::selection { background: var(--brand-soft); }
+  * { scrollbar-width: thin; scrollbar-color: var(--rule-strong) transparent; }
+  a { color: inherit; }
+  :focus { outline: none; }
+  :focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; border-radius: 6px; }
+  input { font: inherit; color: inherit; caret-color: var(--brand); }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  img { display: block; max-width: 100%; height: auto; }
+  h1, h2, h3, p, dl, dd, ol, ul, figure { margin: 0; }
+  .tnum { font-variant-numeric: tabular-nums; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .skip { position: absolute; left: 12px; top: -60px; background: var(--brand); color: var(--brand-ink); padding: 10px 16px; border-radius: 999px; font-weight: 700; z-index: 20; text-decoration: none; }
+  .skip:focus { top: 12px; }
+
+  /* Bullets: the line's colour disc carrying letters, an icon or an emoji */
+  .b { display: inline-grid; place-items: center; flex: none; border-radius: 50%; font-weight: 800; font-stretch: 87.5%; line-height: 1; box-shadow: inset 0 0 0 1px var(--on-color-rule); }
+  .b svg { width: 60%; height: 60%; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+  .b .emo { font-size: 0.62em; }
+  .ln .b .emo { font-size: 0.8125rem; }
+  .here .b .emo { font-size: 1rem; }
+  .meta .b .emo { font-size: 0.5625rem; }
+
+  .btn { display: inline-flex; align-items: center; gap: 10px; height: 46px; padding: 0 22px; border-radius: 999px; font-weight: 700; font-size: 1rem; text-decoration: none; white-space: nowrap; transition: background-color .15s, border-color .15s; }
+  .btn-p { background: var(--brand); color: var(--brand-ink); }
+  .btn-p:hover { background: var(--brand-hover); }
+  .btn-s { background: var(--surface); border: 1px solid var(--rule-strong); color: var(--ink); }
+  .btn-s:hover { background: var(--hover); }
+  .btn .plus { width: 22px; height: 22px; border-radius: 50%; background: var(--brand-ink); color: var(--brand); display: grid; place-items: center; margin-left: -8px; }
+  .btn .plus svg { width: 13px; height: 13px; stroke: currentColor; stroke-width: 3; stroke-linecap: round; fill: none; }
+
+  /* The shell: the signage band and the platform */
+  .shell { display: grid; grid-template-columns: 300px minmax(0, 1fr); min-height: 100vh; }
+  .band { position: sticky; top: 0; height: 100vh; background: var(--band); color: var(--band-ink); display: flex; flex-direction: column; padding: 28px 24px 24px; overflow-y: auto; }
+  .band ::selection { background: rgba(255, 90, 31, 0.4); }
+  .wordmark { display: flex; align-items: center; gap: 11px; font-size: 1.5rem; font-weight: 760; font-stretch: 87.5%; letter-spacing: -0.02em; text-decoration: none; color: var(--band-ink); width: max-content; }
+  .wordmark .b { width: 32px; height: 32px; background: var(--brand); color: var(--brand-ink); font-size: 1.0625rem; box-shadow: none; }
+  .route { list-style: none; padding: 0; margin: 40px 0 0; position: relative; }
+  .route::before { content: ''; position: absolute; left: 15px; top: 24px; bottom: 24px; width: 5px; border-radius: 2px; background: var(--brand); }
+  .route a { position: relative; display: flex; align-items: center; gap: 16px; height: 48px; padding: 0 10px 0 4px; border-radius: 6px; text-decoration: none; font-weight: 650; font-stretch: 87.5%; color: var(--band-ink); transition: background-color .2s; }
+  .route a:hover { background: var(--band-hover); }
+  .route a[aria-current] { background: var(--band-active); }
+  .route .dot { width: 24px; height: 24px; border-radius: 50%; background: var(--band); border: 5px solid var(--brand); flex: none; position: relative; z-index: 1; }
+  .route .train { position: absolute; left: 4px; top: 12px; width: 24px; height: 24px; border-radius: 50%; background: var(--brand); box-shadow: 0 0 0 3px var(--band), 0 0 0 5px var(--band-ink); z-index: 2; pointer-events: none; transform: translateY(var(--y, 0px)); transition: transform .55s var(--ease); }
+  .route small { margin-left: auto; color: var(--band-ink-2); font-weight: 500; font-size: 0.8125rem; font-stretch: 100%; }
+  .band-foot { margin-top: auto; padding-top: 28px; }
+  .band-foot .btn { width: 100%; justify-content: flex-start; padding-left: 20px; }
+  .band-foot p { color: var(--band-ink-2); font-size: 0.8125rem; line-height: 1.5; margin-top: 12px; }
+
+  main { padding: 32px 40px 0; min-width: 0; }
+  .col { max-width: 1120px; margin: 0 auto; }
+
+  /* Station sign */
+  .sign { position: relative; background: var(--surface); border-radius: 10px; padding: 44px 48px 46px; box-shadow: var(--shadow-1); overflow: hidden; }
+  .sign h1 { font-size: clamp(3rem, 6.2vw, 5.75rem); line-height: 0.96; font-weight: 780; font-stretch: 80%; letter-spacing: -0.03em; text-wrap: balance; }
+  .sign .lede { font-size: 1.25rem; line-height: 1.5; color: var(--ink-2); max-width: 48ch; margin-top: 18px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; align-items: center; }
+  .actions .aside { color: var(--ink-3); font-size: 0.9375rem; margin-left: 6px; }
+  .stripe { position: absolute; left: 0; right: 0; bottom: 0; height: 8px; display: flex; overflow: hidden; }
+  .stripe i { flex: 1; }
+  .stripe .sweep { position: absolute; inset: 0; background: var(--sweep, transparent); transform: scaleX(0); transform-origin: left; transition: transform .7s var(--ease); }
+  .stripe.on .sweep { transform: scaleX(1); }
+  .stripe.arrive i { animation: arrive .9s var(--ease) both; }
+  .stripe.arrive i:nth-child(2) { animation-delay: .08s; } .stripe.arrive i:nth-child(3) { animation-delay: .16s; } .stripe.arrive i:nth-child(4) { animation-delay: .24s; } .stripe.arrive i:nth-child(5) { animation-delay: .32s; }
+  @keyframes arrive { from { transform: scaleX(0); transform-origin: left; } to { transform: scaleX(1); transform-origin: left; } }
+
+  /* The live sample library */
+  .lib { margin-top: 20px; background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; display: grid; grid-template-columns: 228px minmax(0, 1fr); overflow: hidden; box-shadow: var(--shadow-1); scroll-margin-top: 24px; }
+  .lines { background: var(--band); color: var(--band-ink); padding: 14px 10px; display: flex; flex-direction: column; gap: 2px; }
+  #lines { display: flex; flex-direction: column; gap: 2px; }
+  .lines h2 { font-size: 0.71875rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--band-ink-2); font-stretch: 87.5%; padding: 4px 10px 8px; }
+  .ln { width: 100%; display: flex; align-items: center; gap: 10px; min-height: 38px; padding: 0 10px; border: 0; border-radius: 6px; background: none; color: var(--band-ink); font-weight: 620; font-stretch: 87.5%; font-size: 0.9375rem; text-align: left; transition: background-color .15s; }
+  .ln:hover { background: var(--band-hover); }
+  .ln[aria-pressed='true'] { background: var(--band-active); }
+  .ln[aria-pressed='true'] .b { box-shadow: 0 0 0 2px var(--band-active), 0 0 0 4px var(--band-ink); }
+  .ln .b { width: 24px; height: 24px; font-size: 0.6875rem; }
+  .ln .n { margin-left: auto; color: var(--band-ink-2); font-size: 0.8125rem; font-weight: 500; }
+  .lines .hint { margin-top: auto; padding: 14px 10px 4px; color: var(--band-ink-2); font-size: 0.8125rem; line-height: 1.45; }
+  .work { padding: 18px 20px 22px; min-width: 0; }
+  .bar { display: flex; gap: 12px; align-items: center; }
+  .search { position: relative; flex: 1; }
+  .search svg { position: absolute; left: 14px; top: 50%; width: 17px; height: 17px; margin-top: -8.5px; stroke: var(--ink-3); fill: none; stroke-width: 2; stroke-linecap: round; }
+  .search input { width: 100%; height: 42px; border-radius: 999px; border: 1px solid var(--rule); background: var(--surface-2); padding: 0 16px 0 40px; font-size: 1rem; transition: border-color .15s, box-shadow .15s, background-color .15s; }
+  .search input::placeholder { color: var(--ink-3); }
+  .search input:focus { outline: none; border-color: var(--brand); background: var(--surface); box-shadow: 0 0 0 3px var(--brand-soft); }
+  .sample { color: var(--ink-3); font-size: 0.8125rem; white-space: nowrap; }
+  .tries { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 10px; color: var(--ink-3); font-size: 0.875rem; }
+  .tries button { height: 28px; padding: 0 11px; border-radius: 999px; border: 1px solid var(--rule-strong); background: var(--surface); font-size: 0.8125rem; font-weight: 600; color: var(--ink-2); }
+  .tries button:hover { background: var(--hover); }
+  .here { display: flex; align-items: center; gap: 12px; margin: 18px 0 14px; padding-bottom: 12px; border-bottom: 4px solid var(--here, var(--brand)); transition: border-color .4s var(--ease); }
+  .here .b { width: 30px; height: 30px; font-size: 0.8125rem; }
+  .here h3 { font-size: 1.375rem; font-weight: 760; font-stretch: 85%; letter-spacing: -0.02em; line-height: 1.1; }
+  .here p { margin-left: auto; color: var(--ink-3); font-size: 0.875rem; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(176px, 1fr)); gap: 14px; }
+  @media (min-width: 1200px) { .cards { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  .more { grid-column: 1 / -1; justify-self: center; height: 40px; padding: 0 18px; border-radius: 999px; border: 1px solid var(--rule-strong); background: var(--surface); font-weight: 650; font-size: 0.9375rem; }
+  .more:hover { background: var(--hover); }
+  .card { container-type: inline-size; background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; transition: transform .25s var(--ease), box-shadow .25s var(--ease); }
+  .card:hover { transform: translateY(-2px); box-shadow: var(--shadow-2); }
+  .cov { aspect-ratio: 16 / 10; position: relative; display: flex; align-items: flex-end; padding: 12px; color: #fff; }
+  .cov .host { font-weight: 760; font-stretch: 80%; font-size: clamp(0.875rem, 7.3cqi, 1.75rem); line-height: 1.1; letter-spacing: -0.01em; overflow-wrap: break-word; min-width: 0; }
+  .cov .fav { position: absolute; left: 12px; top: 12px; width: 26px; height: 26px; border-radius: 6px; background: var(--tile); color: #16171a; display: grid; place-items: center; font-weight: 800; font-size: 0.8125rem; }
+  .card-body { padding: 11px 13px 13px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+  .card h4 { margin: 0; font-size: 0.96875rem; font-weight: 650; line-height: 1.32; }
+  .card h4 a { text-decoration: none; }
+  .card h4 a:hover { text-decoration: underline; text-underline-offset: 3px; }
+  .meta { display: flex; align-items: flex-start; gap: 6px; color: var(--ink-3); font-size: 0.8125rem; }
+  .meta .b { width: 16px; height: 16px; font-size: 0.5rem; margin-top: 2px; }
+  .snip { font-size: 0.8125rem; line-height: 1.45; color: var(--ink-2); }
+  .snip .tag { display: inline-block; background: var(--hover); color: var(--ink-3); font-size: 0.6875rem; font-weight: 650; border-radius: 4px; padding: 0 5px; margin-right: 4px; letter-spacing: 0.02em; }
+  mark { background: var(--brand-soft); color: inherit; border-radius: 4px; padding: 0 2px; }
+  .empty { grid-column: 1 / -1; padding: 34px 8px; color: var(--ink-2); }
+  .empty strong { display: block; color: var(--ink); font-size: 1.0625rem; margin-bottom: 4px; }
+
+  /* Stops */
+  .stop { padding-top: 104px; scroll-margin-top: 8px; }
+  .stop-head { display: flex; align-items: center; gap: 16px; }
+  .stop-head .ring { width: 30px; height: 30px; border-radius: 50%; border: 6px solid var(--brand); background: var(--ground); flex: none; }
+  .stop h2 { font-size: clamp(2rem, 3.6vw, 3rem); font-weight: 770; font-stretch: 82%; letter-spacing: -0.025em; line-height: 1.02; text-wrap: balance; }
+  .stop .lede { font-size: 1.1875rem; line-height: 1.55; color: var(--ink-2); max-width: 58ch; margin: 18px 0 0 46px; }
+  .split { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 48px; align-items: start; margin-top: 34px; padding-left: 46px; }
+  .split.narrow-fig { grid-template-columns: minmax(0, 7fr) minmax(0, 4fr); }
+  .split.stack { grid-template-columns: minmax(0, 1fr); gap: 36px; }
+  .split.stack .rows { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 40px; border-top: 0; }
+  .split.stack .rows > div { border-top: 1px solid var(--rule-strong); border-bottom: 0; }
+  .rows { border-top: 1px solid var(--rule-strong); }
+  .rows > div { display: grid; grid-template-columns: 148px minmax(0, 1fr); gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--rule); }
+  .rows dt { font-weight: 720; font-stretch: 87.5%; }
+  .rows dd { color: var(--ink-2); }
+  kbd { font: inherit; font-weight: 650; font-size: 0.875rem; padding: 1px 7px; border-radius: 4px; border: 1px solid var(--rule-strong); border-bottom-width: 2px; background: var(--surface); color: var(--ink); white-space: nowrap; }
+  .chip { display: inline-flex; align-items: center; height: 24px; padding: 0 9px; border-radius: 999px; background: var(--hover); color: var(--ink-2); font-size: 0.8125rem; font-weight: 650; margin: 2px 4px 2px 0; }
+  .pill { display: inline-flex; align-items: center; gap: 5px; height: 22px; padding: 0 8px 0 6px; border-radius: 999px; font-size: 0.78125rem; font-weight: 650; font-stretch: 87.5%; margin-right: 4px; }
+  .pill::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+  .pill.dead { background: var(--danger-soft); color: var(--danger); }
+  .pill.warn { background: var(--warn-soft); color: var(--warn-ink); }
+  .pill.moved { background: var(--hover); color: var(--ink-2); }
+  figure.shot img { border-radius: 10px; border: 1px solid var(--rule); box-shadow: var(--shadow-2); }
+  figure.shot figcaption { color: var(--ink-3); font-size: 0.875rem; margin-top: 12px; }
+  figure.popup img { max-width: 380px; width: 100%; }
+
+  /* Timetable rows for privacy facts */
+  .table { margin: 34px 0 0 46px; background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; }
+  .table > div { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 24px; padding: 18px 26px; border-top: 1px solid var(--rule); }
+  .table > div:first-child { border-top: 0; }
+  .table dt { font-weight: 740; font-stretch: 85%; font-size: 1.125rem; display: flex; align-items: center; gap: 12px; }
+  .table dt .b { width: 22px; height: 22px; background: var(--band); color: var(--band-ink); }
+  .table dd { color: var(--ink-2); max-width: 64ch; }
+  .table dd strong { color: var(--ink); }
+
+  /* Google account */
+  .consent { margin: 34px 0 0 46px; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 40px; align-items: start; }
+  .scope { background: var(--band); color: var(--band-ink); border-radius: 10px; padding: 24px 26px 26px; position: relative; overflow: hidden; }
+  .scope::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 5px; background: var(--brand); }
+  .scope p.ask { font-size: 1.375rem; line-height: 1.3; font-weight: 700; font-stretch: 87.5%; }
+  .scope p.ask span { color: var(--band-ink-2); font-weight: 500; }
+  .scope code { display: block; margin-top: 14px; font-family: var(--font); font-stretch: 87.5%; font-size: 0.875rem; color: var(--band-ink-2); overflow-wrap: anywhere; }
+  .scope p.only { margin-top: 16px; color: var(--band-ink-2); font-size: 0.9375rem; }
+  .facts { display: grid; gap: 22px; }
+  .facts h3 { font-size: 1.125rem; font-weight: 740; font-stretch: 85%; }
+  .facts p { color: var(--ink-2); margin-top: 4px; max-width: 62ch; }
+  .facts a, .note a, footer a { color: var(--brand-text); text-underline-offset: 3px; }
+  .note { margin: 26px 0 0 46px; padding: 16px 20px; border: 1px solid var(--rule); border-radius: 10px; color: var(--ink-2); font-size: 0.9375rem; max-width: 86ch; }
+
+  /* Terminus */
+  .terminus { margin-top: 104px; background: var(--band); color: var(--band-ink); border-radius: 10px; padding: 56px 56px 60px; position: relative; overflow: hidden; scroll-margin-top: 8px; }
+  .terminus .stripe { height: 10px; }
+  .terminus h2 { font-size: clamp(2.5rem, 5vw, 4.25rem); font-weight: 780; font-stretch: 80%; letter-spacing: -0.03em; line-height: 0.98; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+  .terminus h2 .b { width: 0.9em; height: 0.9em; background: var(--brand); color: var(--brand-ink); font-size: 1em; box-shadow: none; }
+  .terminus h2 .b span { font-size: 0.55em; }
+  .terminus p { color: var(--band-ink-2); font-size: 1.125rem; max-width: 56ch; margin-top: 18px; }
+  .terminus .btn-s { background: transparent; color: var(--band-ink); border-color: var(--band-rule); }
+  .terminus .btn-s:hover { background: var(--band-hover); }
+
+  footer { margin-top: 48px; padding: 26px 0 40px; border-top: 1px solid var(--rule); display: flex; flex-wrap: wrap; gap: 10px 26px; color: var(--ink-3); font-size: 0.9375rem; }
+  footer .credit { flex-basis: 100%; font-size: 0.8125rem; }
+
+  @media (max-width: 1180px) {
+    .split, .split.narrow-fig, .consent { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+    figure.popup { max-width: 380px; }
+  }
+  @media (max-width: 880px) {
+    .shell { display: block; }
+    .band { position: sticky; top: 0; z-index: 10; height: auto; flex-direction: row; align-items: center; justify-content: space-between; padding: 10px 16px; overflow: visible; }
+    .wordmark { font-size: 1.25rem; }
+    .wordmark .b { width: 28px; height: 28px; font-size: 0.9375rem; }
+    .route, .band-foot p { display: none; }
+    .band-foot { margin: 0; padding: 0; }
+    .band-foot .btn { width: auto; height: 40px; padding: 0 16px 0 18px; font-size: 0.9375rem; }
+    main { padding: 16px 16px 0; }
+    .sign { padding: 30px 22px 34px; }
+    .sign .lede { font-size: 1.0625rem; }
+    .lib { grid-template-columns: minmax(0, 1fr); }
+    .lines { flex-direction: row; overflow-x: auto; padding: 10px; gap: 4px; }
+    .lines h2, .lines .hint { display: none; }
+    #lines { flex-direction: row; }
+    .ln { flex: none; width: auto; padding: 0 12px 0 8px; }
+    .work { padding: 14px 14px 18px; }
+    .sample { display: none; }
+    .cards { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+    .cov .host { font-stretch: 75%; }
+    .stop { padding-top: 72px; }
+    .stop { position: relative; }
+    .stop::before { content: ''; position: absolute; left: 11px; width: 5px; border-radius: 2px; background: var(--brand); top: 87px; bottom: -87px; }
+    #google::before { bottom: -72px; }
+    .stop-head .ring { width: 27px; height: 27px; border-width: 5px; position: relative; z-index: 1; }
+    .stop .lede, .split, .table, .consent, .note { margin-left: 40px; padding-left: 0; }
+    .split.stack .rows { grid-template-columns: minmax(0, 1fr); }
+    .rows > div, .table > div { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+    .table > div { padding: 16px 18px; }
+    .terminus { margin-top: 72px; padding: 36px 22px 42px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .route .train { transition: opacity .3s; }
+    .stripe .sweep { transform: none; opacity: 0; transition: opacity .4s; }
+    .stripe.on .sweep { opacity: 1; }
+    .stripe.arrive i { animation: fade .5s both; }
+    .card, .card:hover { transform: none; }
+    @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+  }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="shell">
+  <aside class="band">
+    <a class="wordmark" href="#top" aria-label="Linemark, back to top"><span class="b" aria-hidden="true">L</span>Linemark</a>
+    <nav aria-label="On this page">
+      <ol class="route" id="route">
+        <li class="train" role="presentation" aria-hidden="true"></li>
+        <li><a href="#try"><span class="dot" aria-hidden="true"></span>Try it<small>live</small></a></li>
+        <li><a href="#save"><span class="dot" aria-hidden="true"></span>Save in one gesture</a></li>
+        <li><a href="#find"><span class="dot" aria-hidden="true"></span>Find anything again</a></li>
+        <li><a href="#health"><span class="dot" aria-hidden="true"></span>Keep links healthy</a></li>
+        <li><a href="#private"><span class="dot" aria-hidden="true"></span>Private by default</a></li>
+        <li><a href="#google"><span class="dot" aria-hidden="true"></span>Your Google account</a></li>
+        <li><a href="#install"><span class="dot" aria-hidden="true"></span>Install</a></li>
+      </ol>
+    </nav>
+    <div class="band-foot">
+      <a class="btn btn-p" href="https://chromewebstore.google.com/detail/laapaiiaipeoilipnbhpjmjbdkomhjln" rel="noopener"><span class="plus" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>Add to Chrome</a>
+      <p>Free. No account. Nothing leaves your computer unless you turn on sync.</p>
+    </div>
+  </aside>
+
+  <main id="main">
+    <div class="col">
+      <header class="sign" id="top">
+        <h1>Bookmarks on lines.</h1>
+        <p class="lede">Linemark is a bookmark manager for Chrome. It keeps your bookmarks on colour-coded lines, finds any page by the words inside it, and checks for broken links. All of it lives in your browser.</p>
+        <div class="actions">
+          <a class="btn btn-p" href="https://chromewebstore.google.com/detail/laapaiiaipeoilipnbhpjmjbdkomhjln" rel="noopener">Add to Chrome</a>
+          <a class="btn btn-s" href="privacy.html">Privacy policy</a>
+        </div>
+        <div class="stripe arrive" id="stripe" aria-hidden="true"><i style="background:var(--brand)"></i><i style="background:var(--cobalt)"></i><i style="background:var(--magenta)"></i><i style="background:var(--teal)"></i><i style="background:var(--amber)"></i><span class="sweep"></span></div>
+      </header>
+
+      <section class="lib" id="try" aria-label="Try it: a sample library">
+        <div class="lines">
+          <h2 id="lines-label">Lines</h2>
+          <div id="lines" role="group" aria-labelledby="lines-label"></div>
+          <p class="hint">A sample library to play with. Choose a line, or search the words inside the pages.</p>
+        </div>
+        <div class="work">
+          <div class="bar">
+            <label class="search"><span class="sr">Search the sample library</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              <input id="q" type="search" placeholder="Search titles, tags and page text" autocomplete="off" spellcheck="false">
+            </label>
+            <span class="sample">Sample library</span>
+          </div>
+          <div class="tries">Try <button type="button" data-q="sleeper train">sleeper train</button><button type="button" data-q="#type">#type</button><button type="button" data-q="without a server">without a server</button></div>
+          <div class="here" id="here"></div>
+          <div class="cards" id="cards" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <section class="stop" id="save" aria-labelledby="save-h">
+        <div class="stop-head"><span class="ring" aria-hidden="true"></span><h2 id="save-h">Save in one gesture</h2></div>
+        <p class="lede">Saving takes one click. Linemark keeps the page's title, description and a cover image, stored on your computer. Filing can wait: new saves go to <strong>Unsorted</strong> until you put them on a line.</p>
+        <div class="split narrow-fig">
+          <dl class="rows">
+            <div><dt>Toolbar button</dt><dd>Saves the page you're on, then lets you pick a line, add tags or a note.</dd></div>
+            <div><dt>Keyboard</dt><dd><kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd> saves it without touching the mouse. <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>L</kbd> opens your library.</dd></div>
+            <div><dt>Right-click</dt><dd><strong>Save to Linemark</strong> works on any page, and on any link inside one.</dd></div>
+            <div><dt>All open tabs</dt><dd>Save a whole window of research in one go.</dd></div>
+            <div><dt>Chrome bookmarks</dt><dd>Import them in one click. Folders become lines.</dd></div>
+          </dl>
+          <figure class="shot popup">
+            <img src="images/popup.png" width="380" height="390" alt="The Linemark popup after saving a page: a cover preview, the page title, fields for tags and a note, and a Done button." loading="lazy">
+            <figcaption>The popup that opens when you save a page.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="stop" id="find" aria-labelledby="find-h">
+        <div class="stop-head"><span class="ring" aria-hidden="true"></span><h2 id="find-h">Find anything again</h2></div>
+        <p class="lede">You remember what a page said, not what it was called. Linemark searches the text of the pages you save, and shows you the passage that matched.</p>
+        <div class="split">
+          <dl class="rows">
+            <div><dt>Full text</dt><dd>Titles, tags, notes and the words on the page itself.</dd></div>
+            <div><dt>Filters</dt><dd><span class="chip">#tag</span><span class="chip">site:</span><span class="chip">type:video</span><span class="chip">is:fav</span><span class="chip">is:broken</span></dd></div>
+            <div><dt>Address bar</dt><dd>Type <kbd>lm</kbd> (lower-case L, M), then <kbd>Space</kbd>, to search Linemark from Chrome's address bar.</dd></div>
+            <div><dt>Four views</dt><dd>Cards, list, compact headlines and a moodboard, with a size slider.</dd></div>
+            <div><dt>Line icons</dt><dd>Give each line one of 240 built-in icons, or any emoji.</dd></div>
+          </dl>
+          <figure class="shot">
+            <picture><source media="(max-width: 880px)" srcset="images/home-search-sm.png" width="332" height="365"><img src="images/home-search.png" width="665" height="500" alt="Linemark in its dark theme, searching for the word grid: matching bookmarks show the passage from the page where the word appears." loading="lazy"></picture>
+            <figcaption>Searching for "grid" finds pages that mention it, and shows where.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="stop" id="health" aria-labelledby="health-h">
+        <div class="stop-head"><span class="ring" aria-hidden="true"></span><h2 id="health-h">Keep links healthy</h2></div>
+        <p class="lede">Pages move and disappear. Linemark checks your links and sorts out the ones that need attention.</p>
+        <div class="split stack">
+          <dl class="rows">
+            <div><dt>Link check</dt><dd><span class="pill dead">Dead</span><span class="pill moved">Moved</span><span class="pill warn">Unverified</span> Every link sorted, so you only fix what's really broken.</dd></div>
+            <div><dt>Moved pages</dt><dd>Update a bookmark to its new address in one click.</dd></div>
+            <div><dt>Duplicates</dt><dd>Finds the same page saved twice and merges tags and notes into the copy it keeps.</dd></div>
+            <div><dt>Trash</dt><dd>Nothing is deleted straight away. Undo, or restore from Trash.</dd></div>
+          </dl>
+          <figure class="shot">
+            <picture><source media="(max-width: 880px)" srcset="images/home-health-sm.png" width="328" height="446"><img src="images/home-health.png" width="984" height="508" alt="The Broken links view: bookmarks marked dead, moved or unverified, with buttons to trash dead links and check again." loading="lazy"></picture>
+            <figcaption>The broken-link checker marks each link dead, moved or unverified.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="stop" id="private" aria-labelledby="private-h">
+        <div class="stop-head"><span class="ring" aria-hidden="true"></span><h2 id="private-h">Private by default</h2></div>
+        <p class="lede">Linemark is local by default. There is no Linemark account and no Linemark server, so there is nothing for anyone to collect.</p>
+        <dl class="table">
+          <div><dt><span class="b" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="22" x2="2" y1="12" y2="12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg></span>Your library</dt><dd>Stored in your browser profile, on your computer. Covers are downloaded once and kept there too.</dd></div>
+          <div><dt><span class="b" aria-hidden="true"><svg viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>Accounts and tracking</dt><dd><strong>None.</strong> No sign-up, no analytics, no ads, no crash reporting.</dd></div>
+          <div><dt><span class="b" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>Going online</dt><dd>Only when you ask: saving a page, checking links or fetching previews. Linemark then talks to those websites directly.</dd></div>
+          <div><dt><span class="b" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg></span>Sync</dt><dd><strong>Off unless you turn it on.</strong> Then your library is encrypted on your device with your passphrase before it goes to your own Google Drive.</dd></div>
+          <div><dt><span class="b" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></svg></span>Leaving</dt><dd>Export to HTML, which Chrome can import, or take a full backup, any time.</dd></div>
+        </dl>
+      </section>
+
+      <section class="stop" id="google" aria-labelledby="google-h">
+        <div class="stop-head"><span class="ring" aria-hidden="true"></span><h2 id="google-h">Your Google account</h2></div>
+        <p class="lede">Linemark only asks for your Google account if you turn on sync, so your bookmarks can follow you to other computers. Everything else works without it.</p>
+        <div class="consent">
+          <div class="scope">
+            <p class="ask"><span>Linemark asks for one permission, to</span> see, create, and delete its own configuration data in your Google Drive.</p>
+            <code>https://www.googleapis.com/auth/drive.appdata</code>
+            <p class="only">This is a private app folder that only Linemark can use. It isn't visible in your Drive, and Linemark can't see any of your other files.</p>
+          </div>
+          <div class="facts">
+            <div><h3>What it stores there</h3><p>A few files holding your library, encrypted on your computer with a key made from your passphrase (AES-256-GCM) before they're uploaded. Google only ever holds scrambled data, and your passphrase never leaves your device.</p></div>
+            <div><h3>What it doesn't do</h3><p>Linemark has no server. The sign-in token stays in your browser, and nothing is sent to the developer. Your data isn't sold, shared, or used for ads or anything other than syncing your own library.</p></div>
+            <div><h3>How to stop</h3><p>In Linemark, <strong>Settings → Sync → Delete cloud copy</strong> removes every Linemark file from your Drive. You can also remove Linemark's access at any time from your <a href="https://myaccount.google.com/permissions" rel="noopener">Google Account permissions</a>.</p></div>
+          </div>
+        </div>
+        <p class="note">Linemark's use and transfer of information received from Google APIs adheres to the <a href="https://developers.google.com/terms/api-services-user-data-policy" rel="noopener">Google API Services User Data Policy</a>, including the Limited Use requirements. The full details are in the <a href="privacy.html">privacy policy</a>.</p>
+      </section>
+
+      <section class="terminus" id="install" aria-labelledby="install-h">
+        <h2 id="install-h"><span class="b" aria-hidden="true"><span>L</span></span>Add Linemark to Chrome</h2>
+        <p>Free, with no account. Edge, Brave and Vivaldi can install it from the Chrome Web Store too.</p>
+        <div class="actions">
+          <a class="btn btn-p" href="https://chromewebstore.google.com/detail/laapaiiaipeoilipnbhpjmjbdkomhjln" rel="noopener"><span class="plus" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>Add to Chrome</a>
+          <a class="btn btn-s" href="privacy.html">Privacy policy</a>
+        </div>
+        <div class="stripe" aria-hidden="true"><i style="background:var(--brand)"></i><i style="background:var(--cobalt)"></i><i style="background:var(--magenta)"></i><i style="background:var(--teal)"></i><i style="background:var(--amber)"></i></div>
+      </section>
+
+      <footer>
+        <a href="privacy.html">Privacy policy</a>
+        <a href="https://github.com/EY4O/linemark-site/issues" rel="noopener">Support</a>
+        <a href="mailto:iamlooneth@gmail.com">iamlooneth@gmail.com</a>
+        <a href="https://ko-fi.com/looneth" rel="noopener">Support Linemark on Ko-fi</a>
+        <p class="credit">The sample library links to real public websites; the summaries are ours and the covers are drawn placeholders. Line icons from <a href="https://lucide.dev" rel="noopener">Lucide</a>.</p>
+      </footer>
+    </div>
+  </main>
+</div>
+
+<script>
+(() => {
+  const ICON = {
+    'book-open': '<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>',
+    'train-front': '<path d="M8 3.1V7a4 4 0 0 0 8 0V3.1"/><path d="m9 15-1-1"/><path d="m15 15 1-1"/><path d="M9 19c-2.8 0-5-2.2-5-5v-4a8 8 0 0 1 16 0v4c0 2.8-2.2 5-5 5Z"/><path d="m8 19-2 3"/><path d="m16 19 2 3"/>',
+    'chef-hat': '<path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/><path d="M6 17h12"/>',
+  };
+  const LINES = [
+    { id: 'all', name: 'All bookmarks', color: '#ff5a1f', ink: '#16171a', face: { text: 'L' } },
+    { id: 'reading', name: 'Reading', color: '#2f5bd8', ink: '#fff', face: { icon: 'book-open' } },
+    { id: 'design', name: 'Design', color: '#c2255c', ink: '#fff', face: { text: 'De' } },
+    { id: 'travel', name: 'Travel', color: '#0b7a75', ink: '#fff', face: { icon: 'train-front' } },
+    { id: 'cooking', name: 'Cooking', color: '#f0a800', ink: '#16171a', face: { icon: 'chef-hat' } },
+    { id: 'work', name: 'Work', color: '#7048e8', ink: '#fff', face: { emoji: '🗂️' } },
+  ];
+  const BOOKMARKS = [
+    { line: 'reading', title: "Butterick's Practical Typography", url: 'https://practicaltypography.com/', tags: ['type'], text: 'A free online guide to typography for writers, covering point size, line length, line spacing and choosing fonts.' },
+    { line: 'reading', title: 'Local-first software', url: 'https://www.inkandswitch.com/local-first/', tags: ['essays', 'sync'], text: 'An essay on apps that keep your data on your own device and still collaborate and sync without a server in charge.' },
+    { line: 'reading', title: 'The Elements of Typographic Style Applied to the Web', url: 'http://webtypography.net/', tags: ['type', 'web'], text: 'Classic typographic rules translated into HTML and CSS: rhythm, measure, and setting text that reads well.' },
+    { line: 'design', title: 'Refactoring UI', url: 'https://www.refactoringui.com/', tags: ['ui'], text: 'Practical tactics for interface design: visual hierarchy, spacing systems, choosing colours and adding depth.' },
+    { line: 'design', title: 'Lucide icons', url: 'https://lucide.dev/', tags: ['icons'], text: 'An open-source icon set drawn on one consistent stroke. The line icons in Linemark come from it.' },
+    { line: 'design', title: 'Transit Maps', url: 'https://transitmap.net/', tags: ['maps', 'type'], text: 'A long-running blog reviewing transit maps from cities around the world, official and fan-made.' },
+    { line: 'travel', title: 'The Man in Seat 61', url: 'https://www.seat61.com/', tags: ['trains'], text: 'Guides to travelling by train worldwide: routes, fares, sleeper train cabins and how to book tickets.' },
+    { line: 'travel', title: 'Rome2Rio', url: 'https://www.rome2rio.com/', tags: ['planning'], text: 'Compares trains, buses, flights and ferries between any two places, with rough journey times and prices.' },
+    { line: 'travel', title: 'Wikivoyage', url: 'https://www.wikivoyage.org/', tags: ['guides'], text: 'A free travel guide anyone can edit, with city pages covering getting around, where to eat and where to sleep.' },
+    { line: 'cooking', title: 'Serious Eats', url: 'https://www.seriouseats.com/', tags: ['recipes'], text: 'Recipes tested many times over, with the food science explained: why you salt meat early and how to get a good sear.' },
+    { line: 'cooking', title: 'Budget Bytes', url: 'https://www.budgetbytes.com/', tags: ['recipes', 'cheap'], text: 'Recipes priced out per serving, built around a few cheap staples and meals that keep for the week.' },
+    { line: 'work', title: 'Shape Up', url: 'https://basecamp.com/shapeup', tags: ['process'], text: 'A free book on shaping work into six-week cycles, writing pitches and setting an appetite before you start.' },
+  ];
+  const byId = Object.fromEntries(LINES.map((l) => [l.id, l]));
+  // In All bookmarks, show the lines interleaved, as a mixed library would be.
+  const ORDER = [0, 3, 6, 9, 11, 1, 4, 7, 10, 2, 5, 8];
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const host = (u) => new URL(u).hostname.replace(/^www\./, '');
+  const bullet = (l, extra = '') => {
+    const f = l.face;
+    const inner = f.icon ? `<svg viewBox="0 0 24 24">${ICON[f.icon]}</svg>` : f.emoji ? `<span class="emo">${f.emoji}</span>` : esc(f.text);
+    return `<span class="b ${extra}" style="background:${l.color};color:${l.ink}" aria-hidden="true">${inner}</span>`;
+  };
+  const count = (id) => BOOKMARKS.filter((b) => id === 'all' || b.line === id).length;
+
+  const $lines = document.getElementById('lines');
+  const $cards = document.getElementById('cards');
+  const $here = document.getElementById('here');
+  const $q = document.getElementById('q');
+  const $stripe = document.getElementById('stripe');
+  let current = 'all';
+  let showAll = false;
+  const narrow = window.matchMedia('(max-width: 880px)');
+
+  $lines.innerHTML = LINES.map((l) => `<button type="button" class="ln" data-line="${l.id}" aria-pressed="${l.id === current}">${bullet(l)}<span>${esc(l.name)}</span><span class="n tnum">${count(l.id)}</span></button>`).join('');
+
+  const terms = (q) => q.toLowerCase().split(/\s+/).filter(Boolean);
+  const mark = (text, words) => {
+    let out = esc(text);
+    for (const w of words) {
+      const re = new RegExp(`(${w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+      out = out.replace(re, '<mark>$1</mark>');
+    }
+    return out;
+  };
+  const snippet = (text, words) => {
+    const lower = text.toLowerCase();
+    const at = Math.min(...words.map((w) => { const i = lower.indexOf(w); return i < 0 ? Infinity : i; }));
+    if (!isFinite(at)) return '';
+    const start = Math.max(0, text.lastIndexOf(' ', Math.max(0, at - 40)) + 1);
+    const end = Math.min(text.length, at + 90);
+    return (start > 0 ? '…' : '') + mark(text.slice(start, end), words) + (end < text.length ? '…' : '');
+  };
+
+  function render() {
+    const raw = $q.value.trim();
+    const tagTerms = terms(raw).filter((w) => w.startsWith('#')).map((w) => w.slice(1));
+    const words = terms(raw).filter((w) => !w.startsWith('#'));
+    const line = byId[current];
+    $here.style.setProperty('--here', line.color);
+    const pool = current === 'all' ? ORDER.map((i) => BOOKMARKS[i]) : BOOKMARKS;
+    const list = pool.filter((b) => {
+      if (current !== 'all' && b.line !== current) return false;
+      if (tagTerms.some((t) => !b.tags.some((x) => x.startsWith(t)))) return false;
+      const hay = `${b.title} ${b.tags.join(' ')} ${host(b.url)} ${b.text}`.toLowerCase();
+      return words.every((w) => hay.includes(w));
+    });
+    $here.innerHTML = `${bullet(line)}<h3>${esc(line.name)}</h3><p class="tnum">${raw ? `${list.length} of ${count(current)} match` : `${list.length} bookmark${list.length === 1 ? '' : 's'}`}</p>`;
+    if (!list.length) {
+      $cards.innerHTML = `<div class="empty"><strong>No sample bookmarks match “${esc(raw)}”.</strong>Try “sleeper train” or #type, or choose All bookmarks.</div>`;
+      return;
+    }
+    const cut = narrow.matches && !showAll && !raw && list.length > 6;
+    $cards.innerHTML = (cut ? list.slice(0, 6) : list).map((b) => {
+      const l = byId[b.line];
+      const inTitle = words.length && words.every((w) => `${b.title} ${b.tags.join(' ')}`.toLowerCase().includes(w));
+      const snip = words.length && !inTitle ? snippet(b.text, words) : '';
+      return `<article class="card">
+        <div class="cov" style="background:${l.color};color:${l.ink}"><span class="fav" aria-hidden="true">${esc(host(b.url)[0].toUpperCase())}</span><span class="host">${esc(host(b.url)).replace(/\./g, '.<wbr>')}</span></div>
+        <div class="card-body">
+          <h4><a href="${esc(b.url)}" rel="noopener">${words.length ? mark(b.title, words) : esc(b.title)}</a></h4>
+          ${snip ? `<p class="snip"><span class="tag">IN PAGE</span>${snip}</p>` : ''}
+          <p class="meta">${bullet(l)}<span>${esc(l.name)} · ${b.tags.map((t) => '#' + esc(t)).join(' ')}</span></p>
+        </div>
+      </article>`;
+    }).join('') + (cut ? `<button type="button" class="more" id="more">Show all ${list.length} sample bookmarks</button>` : '');
+  }
+
+  function choose(id) {
+    current = id;
+    for (const btn of $lines.querySelectorAll('.ln')) btn.setAttribute('aria-pressed', String(btn.dataset.line === id));
+    const l = byId[id];
+    $stripe.classList.remove('arrive', 'on');
+    if (id !== 'all') { $stripe.style.setProperty('--sweep', l.color); void $stripe.offsetWidth; $stripe.classList.add('on'); }
+    render();
+  }
+
+  $lines.addEventListener('click', (e) => { const b = e.target.closest('.ln'); if (b) choose(b.dataset.line); });
+  $q.addEventListener('input', render);
+  $cards.addEventListener('click', (e) => { if (e.target.id === 'more') { showAll = true; render(); $cards.querySelectorAll('h4 a')[6]?.focus(); } });
+  narrow.addEventListener('change', render);
+  document.querySelector('.tries').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; $q.value = b.dataset.q; render(); $q.focus(); });
+  render();
+
+  // The route: the ring rides to the stop you're at.
+  const route = document.getElementById('route');
+  const train = route.querySelector('.train');
+  const links = [...route.querySelectorAll('a')];
+  const sections = links.map((a) => document.querySelector(a.getAttribute('href')));
+  let at = -1;
+  function setStop(i) {
+    if (i === at) return;
+    at = i;
+    links.forEach((a, k) => (k === i ? a.setAttribute('aria-current', 'location') : a.removeAttribute('aria-current')));
+    train.style.setProperty('--y', `${links[i].offsetTop}px`);
+  }
+  function locate() {
+    const line = window.innerHeight * 0.4;
+    let i = 0;
+    sections.forEach((s, k) => { if (s.getBoundingClientRect().top <= line) i = k; });
+    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) i = sections.length - 1;
+    setStop(i);
+  }
+  let ticking = false;
+  window.addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(() => { ticking = false; locate(); }); } }, { passive: true });
+  window.addEventListener('resize', () => { at = -1; locate(); });
+  locate();
+})();
+</script>
+</body>
+</html>

@@ -1,7 +1,8 @@
 # Linemark site
 
-The public privacy policy for Linemark, a local-first bookmark manager for Chrome.
+The public homepage and privacy policy for Linemark, a local-first bookmark manager for Chrome.
 
-Live at: https://ey4o.github.io/linemark-site/privacy.html
+- Homepage: https://ey4o.github.io/linemark-site/
+- Privacy policy: https://ey4o.github.io/linemark-site/privacy.html
 
-Archivo font: SIL Open Font License (`fonts/OFL.txt`).
+Published copies of `docs/index.html` and `docs/privacy.html` from the Linemark project. Archivo font: SIL Open Font License (`fonts/OFL.txt`).
