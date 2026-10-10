@@ -110,30 +110,17 @@
   .sign h1 { font-size: clamp(3rem, 6.2vw, 5.75rem); line-height: 0.96; font-weight: 780; font-stretch: 80%; letter-spacing: -0.03em; text-wrap: balance; }
   .sign .lede { font-size: 1.25rem; line-height: 1.5; color: var(--ink-2); max-width: 48ch; margin-top: 18px; }
   .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; align-items: center; }
-  /* The toy (play.js): a small metro to draw, on map paper with a river. Beside the sign's text on wide screens,
-     under it otherwise. Its city picker recolours the whole page. */
-  /* the map is the sign's own lower part (or right half), running edge to edge, not a card inside it */
-  .play { --paper: #f3eee3; --river: #cfe1ea; position: relative; height: 320px; margin: 34px -48px -46px; background: var(--paper); border-top: 1px solid var(--rule); overflow: hidden; }
-  .play canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: pan-y; cursor: crosshair; }
-  .play-hud { position: absolute; left: 16px; right: 16px; top: 12px; display: flex; align-items: baseline; gap: 12px; pointer-events: none; }
-  .play-hint { color: var(--ink-2); font-size: 0.875rem; font-weight: 600; }
-  .play-score { margin-left: auto; color: var(--ink-2); font-size: 0.875rem; white-space: nowrap; }
-  .play-score b { margin-right: 4px; color: var(--ink); font-size: 1.375rem; font-weight: 780; font-stretch: 85%; }
-  .play-bar { position: absolute; left: 14px; right: 14px; bottom: 22px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
-  .play-bar button, .play-city select { height: 32px; padding: 0 12px; border: 1px solid var(--rule-strong); border-radius: 999px; background: var(--surface); color: var(--ink); font: inherit; font-size: 0.8125rem; font-weight: 650; }
-  .play-bar button:hover, .play-city select:hover { background: var(--hover); }
-  .play-city { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2); font-size: 0.8125rem; font-weight: 600; }
-  @media (prefers-color-scheme: dark) { .play { --paper: #1b1e24; --river: #213444; } }
-  @media (min-width: 1180px) {
-    .sign.has-play { min-height: 500px; }
-    .sign.has-play .play { position: absolute; top: 0; right: 0; bottom: 0; width: 47%; height: auto; margin: 0; border-top: 0; border-left: 1px solid var(--rule); }
-    .sign.has-play > h1, .sign.has-play > .lede, .sign.has-play > .actions { max-width: 50%; }
-  }
-  /* The 3D network (hero.js) runs beside the Install block on wide screens; the text keeps the left side. */
+  /* The scene: a small 3D network running beside the sign on wide screens (hero.js); the text keeps the left side. */
   .scene { display: none; }
   @media (min-width: 1180px) {
-    .terminus.has-scene .scene { display: block; position: absolute; right: 0; top: 0; width: 52%; height: calc(100% - 10px); -webkit-mask-image: linear-gradient(to right, transparent, #000 35%); mask-image: linear-gradient(to right, transparent, #000 35%); }
-    .terminus.has-scene > h2, .terminus.has-scene > p, .terminus.has-scene > .actions { position: relative; z-index: 1; max-width: 54%; }
+    .sign.has-scene { min-height: 470px; }
+    .sign.has-scene .scene { display: block; position: absolute; right: 0; top: 0; width: 52%; height: calc(100% - 8px); -webkit-mask-image: linear-gradient(to right, transparent, #000 30%); mask-image: linear-gradient(to right, transparent, #000 30%); }
+    .sign.has-scene > h1, .sign.has-scene > .lede, .sign.has-scene > .actions { position: relative; z-index: 1; max-width: 54%; }
+  }
+  /* where the sign is narrowest, the scene fades in later and the lede steps in, so tracks never run up to the text */
+  @media (min-width: 1180px) and (max-width: 1299px) {
+    .sign.has-scene .scene { -webkit-mask-image: linear-gradient(to right, transparent 14%, #000 50%); mask-image: linear-gradient(to right, transparent 14%, #000 50%); }
+    .sign.has-scene > .lede { max-width: 50%; }
   }
   .actions .aside { color: var(--ink-3); font-size: 0.9375rem; margin-left: 6px; }
   .stripe { position: absolute; left: 0; right: 0; bottom: 0; height: 8px; display: flex; overflow: hidden; }
@@ -367,7 +354,6 @@
     .band-foot .btn { width: auto; height: 44px; padding: 0 16px 0 18px; font-size: 0.9375rem; }
     main { padding: 16px 16px 0; }
     .sign { padding: 30px 22px 34px; }
-    .play { height: 380px; margin: 28px -22px -34px; }
     .sign .lede { font-size: 1.0625rem; }
     .lib { grid-template-columns: minmax(0, 1fr); }
     .lines { flex-direction: row; align-items: center; overflow-x: auto; padding: 8px; gap: 4px; }
@@ -404,7 +390,7 @@
     .terminus { margin-top: 72px; padding: 36px 22px 42px; }
   }
   @media (pointer: coarse), (max-width: 880px) {
-    .tries button, .more, .ln, .fchip, .tag-pill, .seg button, .play-bar button, .play-city select { min-height: 44px; }
+    .tries button, .more, .ln, .fchip, .tag-pill, .seg button { min-height: 44px; }
     .twisty { width: 32px; height: 32px; margin-left: 0; }
     .twisty::before { content: ''; position: absolute; inset: -6px; } /* a 44px tap area around the 32px chevron */
     .seg button { min-width: 44px; }
@@ -477,15 +463,7 @@
           <a class="btn btn-p" href="https://chromewebstore.google.com/detail/laapaiiaipeoilipnbhpjmjbdkomhjln" rel="noopener">Add to Chrome</a>
           <a class="btn btn-s" href="privacy.html">Privacy policy</a>
         </div>
-        <div class="play" id="play">
-          <canvas role="img" aria-label="A small metro to play with. Stations are link types; a train carries the links waiting on each platform to a station of the same shape."></canvas>
-          <div class="play-hud"><p class="play-hint"></p><p class="play-score"><b id="play-n" class="tnum">0</b>links filed</p></div>
-          <div class="play-bar">
-            <button type="button" id="play-draw">Draw a line for me</button>
-            <button type="button" id="play-clear">Clear lines</button>
-            <label class="play-city">City <select id="play-city"><option value="linemark">Linemark</option><option value="london">London</option><option value="paris">Paris</option><option value="tokyo">Tokyo</option><option value="new-york">New York</option><option value="berlin">Berlin</option><option value="seoul">Seoul</option></select></label>
-          </div>
-        </div>
+        <canvas class="scene" id="scene" aria-hidden="true"></canvas>
         <div class="stripe arrive" id="stripe" aria-hidden="true"><i style="background:var(--brand)"></i><i style="background:var(--cobalt)"></i><i style="background:var(--magenta)"></i><i style="background:var(--teal)"></i><i style="background:var(--amber)"></i><span class="sweep"></span></div>
       </header>
 
@@ -616,7 +594,6 @@
           <a class="btn btn-p" href="https://chromewebstore.google.com/detail/laapaiiaipeoilipnbhpjmjbdkomhjln" rel="noopener"><span class="plus" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>Add to Chrome</a>
           <a class="btn btn-s" href="privacy.html">Privacy policy</a>
         </div>
-        <canvas class="scene" id="scene" aria-hidden="true"></canvas>
         <div class="stripe" aria-hidden="true"><i style="background:var(--brand)"></i><i style="background:var(--cobalt)"></i><i style="background:var(--magenta)"></i><i style="background:var(--teal)"></i><i style="background:var(--amber)"></i></div>
       </section>
 
@@ -692,16 +669,10 @@
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const host = (u) => new URL(u).hostname.replace(/^www\./, '');
   const svg = (name) => `<svg viewBox="0 0 24 24" aria-hidden="true">${ICON[name]}</svg>`;
-  // Lettering on a line's colour: white or signage black, whichever reads better, worked out from the colour in use
-  // (the city picker can change every line colour on the page).
-  const lum = (hex) => { const n = parseInt(hex.slice(1), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((c) => { c /= 255; return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; }).reduce((a, c, i) => a + c * [0.2126, 0.7152, 0.0722][i], 0); };
-  const resolve = (v) => { const m = /^var\((--[\w-]+)\)$/.exec(v || ''); return m ? getComputedStyle(document.documentElement).getPropertyValue(m[1]).trim() : v; };
-  const inkOn = (v) => { const h = resolve(v); if (!/^#[0-9a-f]{6}$/i.test(h || '')) return null; const L = lum(h); return (L + 0.05) / (lum('#16171a') + 0.05) > 1.05 / (L + 0.05) ? 'var(--brand-ink)' : 'var(--on-line)'; };
   const bullet = (l, extra = '') => {
     const f = l.face;
     const inner = f.icon ? svg(f.icon) : f.emoji ? `<span class="emo">${f.emoji}</span>` : f.text ? esc(f.text) : '';
-    const ink = (LINES.includes(l) && inkOn(l.color)) || l.ink || 'inherit';
-    return `<span class="b${l.ring ? ' ring' : ''} ${extra}" style="background:${l.color};color:${ink};--c:${l.color}" aria-hidden="true">${inner}</span>`;
+    return `<span class="b${l.ring ? ' ring' : ''} ${extra}" style="background:${l.color};color:${l.ink || 'inherit'};--c:${l.color}" aria-hidden="true">${inner}</span>`;
   };
   const inStation = (id) => (b) => id === 'all' || (id === 'unsorted' ? !b.line : id === 'favorites' ? b.fav : b.line === id);
   const count = (id) => BOOKMARKS.filter(inStation(id)).length;
@@ -773,7 +744,7 @@
     const h = host(b.url);
     const inTitle = words.length && words.every((w) => `${b.title} ${b.tags.join(' ')}`.toLowerCase().includes(w));
     const snip = words.length && !inTitle ? snippet(b.text, words) : '';
-    const pc = l ? l.color : b.cover, pi = inkOn(pc) || (l ? l.ink : b.coverInk);
+    const pc = l ? l.color : b.cover, pi = l ? l.ink : b.coverInk;
     const onLine = l ? bullet(l, 'on-line') : '<span class="b on-line ring" aria-hidden="true"></span>';
     return `<article class="card">
       <div class="cover-wrap"><div class="cov" style="--pc:${pc};--pi:${pi}"><span class="fav" aria-hidden="true">${esc(h[0].toUpperCase())}</span><span class="host">${esc(h).replace(/\./g, '.<wbr>')}</span></div>${onLine}</div>
@@ -841,7 +812,6 @@
   document.querySelector('.tries').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; $q.value = b.dataset.q; renderBand(); render(); $q.focus(); });
   renderBand();
   render();
-  document.addEventListener('linemark:palette', () => { renderBand(); render(); });
 
   // The route: the ring rides to the stop you're at.
   const route = document.getElementById('route');
@@ -879,7 +849,6 @@
   locate();
 })();
 </script>
-<script src="play.js" defer></script>
 <script src="hero.js" defer></script>
 </body>
 </html>

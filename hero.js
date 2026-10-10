@@ -1,10 +1,9 @@
-// The Install block's scene: a small transit network in 3D, drawn with plain WebGL (no libraries, nothing fetched).
+// The station sign's scene: a small transit network in 3D, drawn with plain WebGL (no libraries, nothing fetched).
 // It is decoration only: hidden from assistive tech, shown on wide screens, paused when it is off screen or the tab is
 // in the background, and held as a still picture for people who prefer less motion.
 (() => {
   const canvas = document.getElementById('scene');
-  const sign = canvas?.closest('.sign, .terminus'); // the block the scene sits in
-  const onBand = !!canvas?.closest('.terminus'); // on the signage band, trains and the ground take band colours
+  const sign = canvas?.closest('.sign');
   if (!canvas) return;
   const gl = canvas.getContext('webgl', { antialias: true, alpha: true, premultipliedAlpha: true });
   if (!gl) { canvas.remove(); return; }
@@ -176,8 +175,8 @@
       // stations as on a printed map in either theme: white tops with a signage-black rim
       station: rgb(token('--band-ink')),
       ring: rgb(token('--band')),
-      dots: rgb(token(onBand ? '--band-rule' : '--rule-strong')),
-      train: rgb(token(onBand ? '--band-ink' : '--ink')),
+      dots: rgb(token('--rule-strong')),
+      train: rgb(token('--ink')),
     };
     free(W); free(D); free(B);
     W = upload(world(colors)); D = upload(dots(colors.dots)); B = upload(box());
@@ -268,6 +267,5 @@
   wide.addEventListener('change', sync);
   still.addEventListener('change', sync);
   scheme.addEventListener('change', () => { build(); sync(); if (!running()) draw(STILL_AT); });
-  document.addEventListener('linemark:palette', () => { build(); if (!running()) draw(STILL_AT); }); // a city picked in the toy
   canvas.addEventListener('webglcontextlost', (e) => { e.preventDefault(); cancelAnimationFrame(raf); raf = 0; });
 })();
