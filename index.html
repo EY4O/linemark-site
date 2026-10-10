@@ -20,7 +20,7 @@
     --brand: #ff5a1f; --brand-hover: #ff6f3a; --brand-ink: #16171a; --brand-text: #c23c0b; --brand-soft: rgba(255, 90, 31, 0.13);
     --danger: #c4282f; --danger-soft: rgba(196, 40, 47, 0.1); --warn-ink: #8a5a00; --warn-soft: rgba(240, 168, 0, 0.17);
     --tile: rgba(255, 255, 255, 0.94); --band-selection: rgba(255, 90, 31, 0.4); --on-color-rule: rgba(0, 0, 0, 0.12);
-    --cobalt: #2f5bd8; --magenta: #c2255c; --teal: #0b7a75; --amber: #f0a800; --violet: #7048e8; --green: #2f9e44; --on-line: #ffffff;
+    --cobalt: #2f5bd8; --magenta: #c2255c; --teal: #0b7a75; --amber: #f0a800; --violet: #7048e8; --green: #2f9e44; --slate: #5c6773; --clay: #9a5b36; --olive: #7d8a12; --rose: #e0607e; --signal: #d92a3a; --sky: #1c8fd6; --fav: #f0a800; --on-line: #ffffff;
     --shadow-1: 0 1px 2px rgba(22, 23, 26, 0.06);
     --shadow-2: 0 8px 18px -6px rgba(22, 23, 26, 0.16), 0 2px 4px rgba(22, 23, 26, 0.06);
     --ease: cubic-bezier(0.16, 1, 0.3, 1);
@@ -60,9 +60,9 @@
   .b { display: inline-grid; place-items: center; flex: none; border-radius: 50%; font-weight: 800; font-stretch: 87.5%; line-height: 1; box-shadow: inset 0 0 0 1px var(--on-color-rule); }
   .b svg { width: 60%; height: 60%; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
   .b .emo { font-size: 0.62em; }
-  .ln .b .emo { font-size: 0.8125rem; }
-  .here .b .emo { font-size: 1rem; }
-  .meta .b .emo { font-size: 0.5625rem; }
+  .ln .b .emo { font-size: 0.75rem; }
+  .here-id > .b .emo { font-size: 1.5rem; }
+  .on-line .emo, .fchip .b .emo { font-size: 0.75rem; }
 
   .btn { display: inline-flex; align-items: center; gap: 10px; height: 46px; padding: 0 22px; border-radius: 999px; font-weight: 700; font-size: 1rem; text-decoration: none; white-space: nowrap; transition: background-color .15s, border-color .15s; }
   .btn-p { background: var(--brand); color: var(--brand-ink); }
@@ -131,54 +131,130 @@
   .stripe.arrive i:nth-child(2) { animation-delay: .08s; } .stripe.arrive i:nth-child(3) { animation-delay: .16s; } .stripe.arrive i:nth-child(4) { animation-delay: .24s; } .stripe.arrive i:nth-child(5) { animation-delay: .32s; }
   @keyframes arrive { from { transform: scaleX(0); transform-origin: left; } to { transform: scaleX(1); transform-origin: left; } }
 
-  /* The live sample library */
-  .lib { margin-top: 20px; background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; display: grid; grid-template-columns: 228px minmax(0, 1fr); overflow: hidden; box-shadow: var(--shadow-1); scroll-margin-top: 24px; }
-  .lines { background: var(--band); color: var(--band-ink); padding: 14px 10px; display: flex; flex-direction: column; gap: 2px; }
-  #lines { display: flex; flex-direction: column; gap: 2px; }
-  .lines .group-label { font-size: 0.71875rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--band-ink-2); font-stretch: 87.5%; padding: 4px 10px 8px; }
-  .ln { width: 100%; display: flex; align-items: center; gap: 10px; min-height: 38px; padding: 0 10px; border: 0; border-radius: 6px; background: none; color: var(--band-ink); font-weight: 620; font-stretch: 87.5%; font-size: 0.9375rem; text-align: left; transition: background-color .15s; }
-  .ln:hover { background: var(--band-hover); }
-  .ln[aria-pressed='true'] { background: var(--band-active); }
-  .ln[aria-pressed='true'] .b { box-shadow: 0 0 0 2px var(--band-active), 0 0 0 4px var(--band-ink); }
-  .ln .b { width: 24px; height: 24px; font-size: 0.6875rem; }
-  .ln.branch { position: relative; margin-left: 22px; width: calc(100% - 22px); }
-  .ln.branch::before { content: ''; position: absolute; left: -11px; top: -8px; width: 13px; height: 27px; border-left: 3px solid var(--stem); border-bottom: 3px solid var(--stem); border-bottom-left-radius: 6px; opacity: 0.85; }
-  .here-path { color: var(--ink-3); font-weight: 650; font-size: 0.75em; font-stretch: 87.5%; letter-spacing: 0; }
-  .ln .n { margin-left: auto; color: var(--band-ink-2); font-size: 0.8125rem; font-weight: 500; }
-  .lines .hint { margin-top: auto; padding: 14px 10px 4px; color: var(--band-ink-2); font-size: 0.8125rem; line-height: 1.45; }
-  .work { padding: 18px 20px 22px; min-width: 0; }
-  .bar { display: flex; gap: 12px; align-items: center; }
+  /* The live sample library: the extension's own layout in miniature, on sample data. The signage band holds the
+     system stops, the line tree (branches hang off a stem in their parent's colour) and the tags; beside it, the station
+     sign, the view switch and the cards, built as the extension builds them. */
+  .lib { margin-top: 20px; background: var(--ground); border: 1px solid var(--rule); border-radius: 10px; display: grid; grid-template-columns: 248px minmax(0, 1fr); overflow: hidden; box-shadow: var(--shadow-1); scroll-margin-top: 24px; }
+  .lines { background: var(--band); color: var(--band-ink); padding: 12px 10px 14px; display: flex; flex-direction: column; min-width: 0; }
+  .lines .group-label { font-size: 0.71875rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--band-ink-2); font-stretch: 87.5%; padding: 18px 10px 6px; }
+  #sys, #lines { display: flex; flex-direction: column; gap: 1px; }
+  .row { position: relative; display: flex; align-items: center; min-height: 36px; border-radius: 6px; transition: background-color .12s; }
+  .row:hover { background: var(--band-hover); }
+  .row:has(.ln[aria-pressed='true']) { background: var(--band-active); }
+  .row:has(.ln:focus-visible) { outline: 2px solid var(--brand); outline-offset: -2px; }
+  .twisty { flex: none; position: relative; z-index: 1; width: 18px; height: 18px; margin: 0 0 0 4px; display: grid; place-items: center; border: 0; border-radius: 4px; background: none; color: var(--band-ink-2); }
+  .twisty svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; transition: transform .2s var(--ease); }
+  .twisty[aria-expanded='true'] svg { transform: rotate(90deg); }
+  .twisty:hover { color: var(--band-ink); background: var(--band-active); }
+  span.twisty { visibility: hidden; }
+  .ln { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; min-height: 36px; padding: 0 10px 0 6px; border: 0; border-radius: 6px; background: none; color: var(--band-ink); font-size: 0.875rem; font-weight: 560; font-stretch: 87.5%; text-align: left; }
+  .ln::after { content: ''; position: absolute; inset: 0; border-radius: inherit; }
+  .ln:focus-visible { outline: none; }
+  .ln[aria-pressed='true'] { font-weight: 650; }
+  #sys .ln { padding-left: 10px; }
+  .ln .nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ln .n { color: var(--band-ink-2); font-size: 0.78125rem; font-weight: 500; font-stretch: 100%; }
+  .ln .b { width: 20px; height: 20px; font-size: 0.625rem; }
+  .ln[aria-pressed='true'] .b { box-shadow: 0 0 0 2px var(--band-active), 0 0 0 4px var(--c, var(--band-ink)); }
+  .b.ring { background: transparent !important; box-shadow: inset 0 0 0 2px var(--band-ink-2); }
+  .b .fill { fill: currentColor; stroke: none; }
+  /* the tree: a stem in the parent's colour under its expand chevron, and an elbow into each child's bullet */
+  .kids { position: relative; margin-left: 12px; }
+  .kids[hidden] { display: none; }
+  .kids::before { content: ''; position: absolute; left: 0; top: -6px; bottom: 17px; width: 3px; border-radius: 2px; background: var(--stem); opacity: .85; }
+  .kids > .node > .row { margin-left: 7px; }
+  .kids > .node > .row::before { content: ''; position: absolute; left: -7px; top: calc(50% - 1.5px); width: 33px; height: 3px; background: var(--stem); opacity: .85; }
+  .kids > .node > .row:has(button.twisty)::before { width: 11px; } /* a branch with its own branches: the elbow meets its chevron */
+  #tags { display: flex; flex-wrap: wrap; gap: 6px; padding: 2px 8px 0; }
+  .tag-pill { height: 26px; padding: 0 9px; border: 0; border-radius: 999px; background: var(--band-active); color: var(--band-ink); font-size: 0.75rem; font-weight: 650; font-stretch: 87.5%; }
+  .tag-pill:hover { box-shadow: inset 0 0 0 1px var(--band-ink-2); }
+  .tag-pill[aria-pressed='true'] { background: var(--brand); color: var(--brand-ink); }
+  .tag-pill .n { margin-left: 4px; color: var(--band-ink-2); font-weight: 500; }
+  .tag-pill[aria-pressed='true'] .n { color: var(--brand-ink); }
+  .lines .hint { margin-top: auto; padding: 18px 10px 0; color: var(--band-ink-2); font-size: 0.8125rem; line-height: 1.45; }
+
+  .work { min-width: 0; display: flex; flex-direction: column; }
+  /* the station sign: bullet, the parent path on a branch, the name and count, a stripe in the line's colour */
+  .here { --c: var(--brand); position: relative; display: flex; align-items: center; flex-wrap: wrap; gap: 12px 20px; padding: 16px 20px 18px; background: var(--surface); }
+  .here::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: var(--c); transition: background-color .4s var(--ease); }
+  .here-id { display: flex; align-items: center; gap: 14px; min-width: 0; flex: 1 1 260px; }
+  .here-id > .b { width: 46px; height: 46px; font-size: 1.0625rem; }
+  .here-text { min-width: 0; }
+  .here-path { display: flex; align-items: center; gap: 4px; min-height: 18px; color: var(--ink-3); font-size: 0.78125rem; white-space: nowrap; overflow: hidden; }
+  .here-path button { display: inline-flex; align-items: center; gap: 5px; border: 0; background: none; padding: 0; color: inherit; font-size: inherit; font-weight: 600; }
+  .here-path button:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+  .here-path .dot { width: 12px; height: 12px; border-radius: 50%; flex: none; }
+  .here-path svg { width: 12px; height: 12px; fill: none; stroke: var(--ink-3); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; opacity: .7; }
+  .here h3 { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; font-size: 1.875rem; font-weight: 760; font-stretch: 85%; letter-spacing: -0.02em; line-height: 1.08; }
+  .here h3 .count { font-size: 0.8125rem; font-weight: 400; font-stretch: 100%; letter-spacing: 0; color: var(--ink-3); }
+  .here h3 .count b { color: var(--ink); font-weight: 650; }
+  .bar { flex: 1 1 240px; max-width: 340px; display: flex; }
   .search { position: relative; flex: 1; }
   .search svg { position: absolute; left: 14px; top: 50%; width: 17px; height: 17px; margin-top: -8.5px; stroke: var(--ink-3); fill: none; stroke-width: 2; stroke-linecap: round; }
-  .search input { width: 100%; height: 42px; border-radius: 999px; border: 1px solid var(--rule); background: var(--surface-2); padding: 0 16px 0 40px; font-size: 1rem; transition: border-color .15s, box-shadow .15s, background-color .15s; }
+  .search input { width: 100%; height: 40px; border-radius: 999px; border: 1px solid var(--rule-strong); background: var(--surface-2); padding: 0 16px 0 40px; font-size: 0.9375rem; transition: border-color .15s, box-shadow .15s, background-color .15s; }
   .search input::placeholder { color: var(--ink-3); }
   .search input:focus { outline: none; border-color: var(--brand); background: var(--surface); box-shadow: 0 0 0 3px var(--brand-soft); }
-  .sample { color: var(--ink-3); font-size: 0.8125rem; white-space: nowrap; }
-  .tries { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 10px; color: var(--ink-3); font-size: 0.875rem; }
+  .subbar { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 14px; padding: 10px 20px; border-bottom: 1px solid var(--rule); }
+  .seg { display: inline-flex; padding: 2px; border-radius: 8px; background: var(--hover); border: 1px solid var(--rule); }
+  .seg button { width: 34px; min-height: 28px; display: grid; place-items: center; border: 0; border-radius: 6px; background: transparent; color: var(--ink-3); }
+  .seg button:hover { color: var(--ink); }
+  .seg button[aria-pressed='true'] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow-1), 0 0 0 1px var(--rule); }
+  .seg svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .tries { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; color: var(--ink-3); font-size: 0.875rem; }
   .tries button { height: 28px; padding: 0 11px; border-radius: 999px; border: 1px solid var(--rule-strong); background: var(--surface); font-size: 0.8125rem; font-weight: 600; color: var(--ink-2); }
   .tries button:hover { background: var(--hover); }
-  .here { display: flex; align-items: center; gap: 12px; margin: 18px 0 14px; padding-bottom: 12px; border-bottom: 4px solid var(--here, var(--brand)); transition: border-color .4s var(--ease); }
-  .here .b { width: 30px; height: 30px; font-size: 0.8125rem; }
-  .here h3 { font-size: 1.375rem; font-weight: 760; font-stretch: 85%; letter-spacing: -0.02em; line-height: 1.1; }
-  .here { flex-wrap: wrap; row-gap: 4px; }
-  .here p { margin-left: auto; color: var(--ink-3); font-size: 0.875rem; }
+  .sample { margin-left: auto; color: var(--ink-3); font-size: 0.8125rem; white-space: nowrap; }
+  .pane { padding: 16px 20px 22px; }
+  .transfers { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 14px; color: var(--ink-3); font-size: 0.8125rem; }
+  .fchip { display: inline-flex; align-items: center; gap: 6px; min-height: 28px; padding: 0 10px 0 5px; border: 1px solid var(--rule-strong); border-radius: 999px; background: var(--surface); color: var(--ink); font-size: 0.8125rem; font-weight: 600; font-stretch: 87.5%; }
+  .fchip:hover { background: var(--hover); }
+  .fchip .b { width: 18px; height: 18px; font-size: 0.5625rem; }
+  .fchip .n { color: var(--ink-3); font-weight: 500; }
+  .elsewhere { margin: 0 0 14px; color: var(--ink-2); font-size: 0.875rem; }
+  .elsewhere button { border: 0; background: none; padding: 0; color: var(--brand-text); font-weight: 650; text-decoration: underline; text-underline-offset: 3px; }
+
   .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(176px, 1fr)); gap: 14px; }
   @media (min-width: 1200px) { .cards { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
   .more { grid-column: 1 / -1; justify-self: center; height: 40px; padding: 0 18px; border-radius: 999px; border: 1px solid var(--rule-strong); background: var(--surface); font-weight: 650; font-size: 0.9375rem; }
   .more:hover { background: var(--hover); }
-  .card { container-type: inline-size; background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; transition: transform .25s var(--ease), box-shadow .25s var(--ease); }
-  .card:hover { transform: translateY(-2px); box-shadow: var(--shadow-2); }
-  .cov { aspect-ratio: 16 / 10; position: relative; display: flex; align-items: flex-end; padding: 12px; color: var(--on-line); }
+  .card { position: relative; container-type: inline-size; overflow: hidden; background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; display: flex; flex-direction: column; box-shadow: var(--shadow-1); transition: transform .25s var(--ease), box-shadow .25s var(--ease), border-color .25s; }
+  .card:hover { transform: translateY(-2px); box-shadow: var(--shadow-2); border-color: var(--rule-strong); }
+  .cover-wrap { position: relative; }
+  /* a placeholder cover, as the extension draws one: the line's colour, a favicon tile and the host */
+  .cov { aspect-ratio: 16 / 10; display: flex; flex-direction: column; justify-content: flex-end; gap: 8px; padding: 12px 14px; background: var(--pc); color: var(--pi); }
+  .cov .fav { width: clamp(26px, 15cqi, 40px); height: clamp(26px, 15cqi, 40px); border-radius: 8px; background: var(--tile); color: var(--band); display: grid; place-items: center; font-weight: 800; font-stretch: 85%; font-size: clamp(0.8125rem, 7cqi, 1.125rem); box-shadow: var(--shadow-2); }
   .cov .host { font-weight: 760; font-stretch: 80%; font-size: clamp(0.875rem, 7.3cqi, 1.75rem); line-height: 1.1; letter-spacing: -0.01em; overflow-wrap: break-word; min-width: 0; }
-  .cov .fav { position: absolute; left: 12px; top: 12px; width: 26px; height: 26px; border-radius: 6px; background: var(--tile); color: var(--brand-ink); display: grid; place-items: center; font-weight: 800; font-size: 0.8125rem; }
-  .card-body { padding: 11px 13px 13px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
-  .card h4 { margin: 0; font-size: 0.96875rem; font-weight: 650; line-height: 1.32; }
+  .on-line { position: absolute; left: 13px; bottom: 0; transform: translateY(50%); width: 22px; height: 22px; font-size: 0.625rem; box-shadow: 0 0 0 3px var(--surface) !important; }
+  .on-line.ring { background: var(--surface) !important; box-shadow: inset 0 0 0 2px var(--ink-3), 0 0 0 3px var(--surface) !important; }
+  .card-body { display: flex; flex-direction: column; gap: 6px; padding: 18px 13px 13px; flex: 1; min-width: 0; }
+  .card h4 { margin: 0; font-size: 0.90625rem; font-weight: 650; line-height: 1.32; }
   .card h4 a { text-decoration: none; }
+  .card h4 a::after { content: ''; position: absolute; inset: 0; border-radius: inherit; }
   .card h4 a:hover { text-decoration: underline; text-underline-offset: 3px; }
-  .meta { display: flex; align-items: flex-start; gap: 6px; color: var(--ink-3); font-size: 0.8125rem; }
-  .meta .b { width: 16px; height: 16px; font-size: 0.5rem; margin-top: 2px; }
+  .card h4 a:focus-visible { outline: none; }
+  .card:has(h4 a:focus-visible) { outline: 2px solid var(--brand); outline-offset: 3px; }
+  .excerpt { color: var(--ink-2); font-size: 0.8125rem; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .card .tags { display: flex; flex-wrap: wrap; gap: 2px 8px; color: var(--ink-2); font-size: 0.8125rem; font-weight: 600; }
+  .meta { display: flex; align-items: center; gap: 6px; margin-top: auto; color: var(--ink-3); font-size: 0.8125rem; min-width: 0; }
+  .meta .fv { flex: none; width: 14px; height: 14px; border-radius: 4px; display: grid; place-items: center; background: var(--hover); color: var(--ink-2); font-size: 0.5625rem; font-weight: 800; }
+  .meta .h { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .meta .w { flex: none; white-space: nowrap; }
+  .meta .star { flex: none; margin-left: auto; width: 14px; height: 14px; fill: var(--fav); }
+  .hl { display: none; }
   .snip { font-size: 0.8125rem; line-height: 1.45; color: var(--ink-2); }
   .snip .tag { display: inline-block; background: var(--hover); color: var(--ink-3); font-size: 0.6875rem; font-weight: 650; border-radius: 4px; padding: 0 5px; margin-right: 4px; letter-spacing: 0.02em; }
+  /* the List view: one row per link, its bullet beside the title */
+  .cards.list { grid-template-columns: minmax(0, 1fr); gap: 0; background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; }
+  .cards.list .card { flex-direction: row; align-items: center; border: 0; border-bottom: 1px solid var(--rule); border-radius: 0; box-shadow: none; transform: none; }
+  .cards.list .card:last-of-type { border-bottom: 0; }
+  .cards.list .card:hover { background: var(--surface-2); }
+  .cards.list .cover-wrap, .cards.list .excerpt, .cards.list .tags { display: none; }
+  .cards.list .card-body { flex-direction: row; align-items: center; gap: 12px; padding: 11px 16px; }
+  .cards.list .hl { display: inline-grid; width: 20px; height: 20px; font-size: 0.625rem; }
+  .cards.list h4 { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cards.list .snip { display: none; }
+  .cards.list .meta { margin: 0; flex: none; max-width: 45%; }
+  .cards.list .more { margin: 12px auto; }
   mark { background: var(--brand-soft); color: inherit; border-radius: 4px; padding: 0 2px; }
   .empty { grid-column: 1 / -1; padding: 34px 8px; color: var(--ink-2); }
   .empty strong { display: block; color: var(--ink); font-size: 1.0625rem; margin-bottom: 4px; }
@@ -206,6 +282,7 @@
   .rows > div { display: grid; grid-template-columns: 148px minmax(0, 1fr); gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--rule); }
   .rows dt { font-weight: 720; font-stretch: 87.5%; }
   .rows dd { color: var(--ink-2); }
+  .keys { white-space: nowrap; } /* a shortcut never breaks across lines */
   kbd { font: inherit; font-weight: 650; font-size: 0.875rem; padding: 1px 7px; border-radius: 4px; border: 1px solid var(--rule-strong); border-bottom-width: 2px; background: var(--surface); color: var(--ink); white-space: nowrap; }
   .chip { display: inline-flex; align-items: center; height: 24px; padding: 0 9px; border-radius: 999px; background: var(--hover); color: var(--ink-2); font-size: 0.8125rem; font-weight: 650; margin: 2px 4px 2px 0; }
   .pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
@@ -271,14 +348,17 @@
     .sign { padding: 30px 22px 34px; }
     .sign .lede { font-size: 1.0625rem; }
     .lib { grid-template-columns: minmax(0, 1fr); }
-    .lines { flex-direction: row; overflow-x: auto; padding: 10px; gap: 4px; }
-    .lines .group-label, .lines .hint { display: none; }
-    #lines { flex-direction: row; }
-    .ln.branch { margin-left: 0; width: auto; }
-    .ln.branch::before { display: none; }
-    .ln { flex: none; width: auto; padding: 0 12px 0 8px; }
-    .work { padding: 14px 14px 18px; }
+    .lines { flex-direction: row; align-items: center; overflow-x: auto; padding: 8px; gap: 4px; }
+    .lines .group-label, .lines .hint, #tags, .twisty { display: none; }
+    #sys, #lines, .node, .kids { display: contents; }
+    .kids::before, .kids > .node > .row::before { display: none; } /* contents boxes still draw their pseudo-elements */
+    .row { flex: none; }
+    .ln { padding: 0 12px 0 8px; }
+    .here { padding: 14px 14px 16px; }
+    .bar { max-width: none; flex-basis: 100%; }
+    .subbar { padding: 8px 14px; }
     .sample { display: none; }
+    .pane { padding: 14px 14px 18px; }
     .cards { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
     .cov .host { font-stretch: 75%; }
     .stop { padding-top: 72px; }
@@ -302,9 +382,10 @@
     .terminus { margin-top: 72px; padding: 36px 22px 42px; }
   }
   @media (pointer: coarse), (max-width: 880px) {
-    .tries button, .more, .ln { min-height: 44px; }
+    .tries button, .more, .ln, .fchip, .tag-pill, .seg button { min-height: 44px; }
+    .twisty { width: 32px; height: 32px; margin-left: 0; }
+    .here-path button { min-height: 32px; }
     .search input { height: 46px; }
-    .card h4 a { display: block; padding: 12px 0; margin: -12px 0; }
     .path a { min-height: 44px; }
     .path { margin-bottom: 0; }
     footer { row-gap: 0; }
@@ -379,22 +460,36 @@
       <section class="lib" id="try" aria-labelledby="try-h">
         <h2 class="sr" id="try-h">Try it: a sample library</h2>
         <div class="lines">
+          <div id="sys" role="group" aria-label="Library"></div>
           <p class="group-label" id="lines-label">Lines</p>
           <div id="lines" role="group" aria-labelledby="lines-label"></div>
-          <p class="hint">A sample library to play with. Choose a line, or search the words inside the pages.</p>
+          <p class="group-label" id="tags-label">Tags</p>
+          <div id="tags" role="group" aria-labelledby="tags-label"></div>
+          <p class="hint">A sample library to play with. Choose a line or a tag, or search the words inside the pages.</p>
         </div>
         <div class="work">
-          <div class="bar">
-            <label class="search"><span class="sr">Search the sample library</span>
-              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-              <input id="q" type="search" placeholder="Search titles, tags and page text" autocomplete="off" spellcheck="false">
-            </label>
+          <div class="here" id="here">
+            <div class="here-id" id="here-id"></div>
+            <div class="bar">
+              <label class="search"><span class="sr">Search the sample library</span>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                <input id="q" type="search" placeholder="Search, #tag, page text" autocomplete="off" spellcheck="false">
+              </label>
+            </div>
+          </div>
+          <div class="subbar">
+            <div class="seg" role="group" aria-label="View">
+              <button type="button" data-view="cards" aria-pressed="true" aria-label="Cards" title="Cards"><svg viewBox="0 0 24 24" aria-hidden="true"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg></button>
+              <button type="button" data-view="list" aria-pressed="false" aria-label="List" title="List"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h.01M3 12h.01M3 18h.01M8 6h13M8 12h13M8 18h13"/></svg></button>
+            </div>
+            <div class="tries">Try <button type="button" data-q="sleeper train">sleeper train</button><button type="button" data-q="#type">#type</button><button type="button" data-q="without a server">without a server</button></div>
             <span class="sample">Sample library</span>
           </div>
-          <div class="tries">Try <button type="button" data-q="sleeper train">sleeper train</button><button type="button" data-q="#type">#type</button><button type="button" data-q="without a server">without a server</button></div>
-          <div class="here" id="here"></div>
-          <p class="sr" id="status" role="status"></p>
-          <div class="cards" id="cards"></div>
+          <div class="pane">
+            <p class="sr" id="status" role="status"></p>
+            <div id="above"></div>
+            <div class="cards" id="cards"></div>
+          </div>
         </div>
       </section>
 
@@ -404,7 +499,7 @@
         <div class="split narrow-fig">
           <dl class="rows">
             <div><dt>Toolbar button</dt><dd>Saves the page you're on, then lets you pick a line, add tags or a note.</dd></div>
-            <div><dt>Keyboard</dt><dd><kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd> saves it without touching the mouse. <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>L</kbd> opens your library.</dd></div>
+            <div><dt>Keyboard</dt><dd><span class="keys"><kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd></span> saves it without touching the mouse.<br><span class="keys"><kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>L</kbd></span> opens your library.</dd></div>
             <div><dt>Right-click</dt><dd><strong>Save to Linemark</strong> works on any page, and on any link inside one.</dd></div>
             <div><dt>Lines and branches</dt><dd>Type <kbd>Videos/Markiplier</kbd> in the line picker to file a link on a new branch in one step.</dd></div>
             <div><dt>All open tabs</dt><dd>Save a whole window of research in one go.</dd></div>
@@ -509,54 +604,106 @@
     'book-open': '<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>',
     'train-front': '<path d="M8 3.1V7a4 4 0 0 0 8 0V3.1"/><path d="m9 15-1-1"/><path d="m15 15 1-1"/><path d="M9 19c-2.8 0-5-2.2-5-5v-4a8 8 0 0 1 16 0v4c0 2.8-2.2 5-5 5Z"/><path d="m8 19-2 3"/><path d="m16 19 2 3"/>',
     'chef-hat': '<path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/><path d="M6 17h12"/>',
+    map: '<path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/><path d="M15 5.764v15"/><path d="M9 3.236v15"/>',
+    grid: '<rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/>',
+    star: '<path class="fill" d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/>',
+    chevron: '<path d="m9 18 6-6-6-6"/>',
   };
+  const W = 'var(--on-line)', K = 'var(--brand-ink)'; // bullet lettering: white or signage black, whichever reads on the colour
+  // System stops, then the lines. A branch names its parent; Sleepers is a branch of a branch.
+  const SYS = [
+    { id: 'all', name: 'All bookmarks', color: 'var(--band-ink)', ink: 'var(--band)', face: { icon: 'grid' } },
+    { id: 'unsorted', name: 'Unsorted', color: 'transparent', ring: true, face: {} },
+    { id: 'favorites', name: 'Favorites', color: 'var(--fav)', ink: K, face: { icon: 'star' } },
+  ];
   const LINES = [
-    { id: 'all', name: 'All bookmarks', color: 'var(--brand)', ink: 'var(--brand-ink)', face: { text: 'L' } },
-    { id: 'reading', name: 'Reading', color: 'var(--cobalt)', ink: 'var(--on-line)', face: { icon: 'book-open' } },
-    { id: 'type', name: 'Typography', parent: 'reading', color: 'var(--green)', ink: 'var(--brand-ink)', face: { text: 'Ty' } },
-    { id: 'design', name: 'Design', color: 'var(--magenta)', ink: 'var(--on-line)', face: { text: 'De' } },
-    { id: 'travel', name: 'Travel', color: 'var(--teal)', ink: 'var(--on-line)', face: { icon: 'train-front' } },
-    { id: 'cooking', name: 'Cooking', color: 'var(--amber)', ink: 'var(--brand-ink)', face: { icon: 'chef-hat' } },
-    { id: 'work', name: 'Work', color: 'var(--violet)', ink: 'var(--on-line)', face: { emoji: '🗂️' } },
+    { id: 'reading', name: 'Reading', color: 'var(--cobalt)', ink: W, face: { icon: 'book-open' } },
+    { id: 'type', name: 'Typography', parent: 'reading', color: 'var(--green)', ink: K, face: { text: 'Ty' } },
+    { id: 'essays', name: 'Essays', parent: 'reading', color: 'var(--slate)', ink: W, face: { text: 'Es' } },
+    { id: 'design', name: 'Design', color: 'var(--magenta)', ink: W, face: { text: 'De' } },
+    { id: 'maps', name: 'Maps', parent: 'design', color: 'var(--clay)', ink: W, face: { icon: 'map' } },
+    { id: 'travel', name: 'Travel', color: 'var(--teal)', ink: W, face: { icon: 'train-front' } },
+    { id: 'trains', name: 'Trains', parent: 'travel', color: 'var(--amber)', ink: K, face: { text: 'Tr' } },
+    { id: 'sleepers', name: 'Sleepers', parent: 'trains', color: 'var(--rose)', ink: K, face: { emoji: '🛏️' } },
+    { id: 'japan', name: 'Japan', parent: 'travel', color: 'var(--signal)', ink: W, face: { emoji: '🗻' } },
+    { id: 'cooking', name: 'Cooking', color: 'var(--olive)', ink: K, face: { icon: 'chef-hat' } },
+    { id: 'work', name: 'Work', color: 'var(--violet)', ink: W, face: { emoji: '🗂️' } },
   ];
   const BOOKMARKS = [
-    { line: 'type', title: "Butterick's Practical Typography", url: 'https://practicaltypography.com/', tags: ['type'], text: 'A free online guide to typography for writers, covering point size, line length, line spacing and choosing fonts.' },
-    { line: 'reading', title: 'Local-first software', url: 'https://www.inkandswitch.com/local-first/', tags: ['essays', 'sync'], text: 'An essay on apps that keep your data on your own device and still collaborate and sync without a server in charge.' },
-    { line: 'type', title: 'The Elements of Typographic Style Applied to the Web', url: 'http://webtypography.net/', tags: ['type', 'web'], text: 'Classic typographic rules translated into HTML and CSS: rhythm, measure, and setting text that reads well.' },
-    { line: 'design', title: 'Refactoring UI', url: 'https://www.refactoringui.com/', tags: ['ui'], text: 'Practical tactics for interface design: visual hierarchy, spacing systems, choosing colours and adding depth.' },
-    { line: 'design', title: 'Lucide icons', url: 'https://lucide.dev/', tags: ['icons'], text: 'An open-source icon set drawn on one consistent stroke. The line icons in Linemark come from it.' },
-    { line: 'design', title: 'Transit Maps', url: 'https://transitmap.net/', tags: ['maps', 'type'], text: 'A long-running blog reviewing transit maps from cities around the world, official and fan-made.' },
-    { line: 'travel', title: 'The Man in Seat 61', url: 'https://www.seat61.com/', tags: ['trains'], text: 'Guides to travelling by train worldwide: routes, fares, sleeper train cabins and how to book tickets.' },
-    { line: 'travel', title: 'Rome2Rio', url: 'https://www.rome2rio.com/', tags: ['planning'], text: 'Compares trains, buses, flights and ferries between any two places, with rough journey times and prices.' },
-    { line: 'travel', title: 'Wikivoyage', url: 'https://www.wikivoyage.org/', tags: ['guides'], text: 'A free travel guide anyone can edit, with city pages covering getting around, where to eat and where to sleep.' },
-    { line: 'cooking', title: 'Serious Eats', url: 'https://www.seriouseats.com/', tags: ['recipes'], text: 'Recipes tested many times over, with the food science explained: why you salt meat early and how to get a good sear.' },
-    { line: 'cooking', title: 'Budget Bytes', url: 'https://www.budgetbytes.com/', tags: ['recipes', 'cheap'], text: 'Recipes priced out per serving, built around a few cheap staples and meals that keep for the week.' },
-    { line: 'work', title: 'Shape Up', url: 'https://basecamp.com/shapeup', tags: ['process'], text: 'A free book on shaping work into six-week cycles, writing pitches and setting an appetite before you start.' },
+    { line: 'reading', title: 'Local-first software', url: 'https://www.inkandswitch.com/local-first/', tags: ['essays', 'sync'], when: '3d ago', text: 'An essay on apps that keep your data on your own device and still collaborate and sync without a server in charge.' },
+    { line: 'reading', title: 'The Pudding', url: 'https://pudding.cool/', tags: ['data', 'essays'], when: 'Sep 28', text: 'Visual essays that explain ideas with data and interactive charts, on music, language, sport and culture.' },
+    { line: 'type', title: "Butterick's Practical Typography", url: 'https://practicaltypography.com/', tags: ['type', 'reference'], when: 'Oct 2', fav: true, text: 'A free online guide to typography for writers, covering point size, line length, line spacing and choosing fonts.' },
+    { line: 'type', title: 'The Elements of Typographic Style Applied to the Web', url: 'http://webtypography.net/', tags: ['type', 'web'], when: 'Sep 30', text: 'Classic typographic rules translated into HTML and CSS: rhythm, measure, and setting text that reads well.' },
+    { line: 'type', title: 'Typewolf', url: 'https://www.typewolf.com/', tags: ['type', 'fonts'], when: '5d ago', text: 'Which fonts are popular right now, with real sites as examples and suggestions for pairing typefaces.' },
+    { line: 'essays', title: 'Paul Graham: Essays', url: 'https://paulgraham.com/articles.html', tags: ['essays', 'startups'], when: 'Sep 21', text: 'Essays on startups, programming and how to think about work, written over two decades.' },
+    { line: 'essays', title: 'Dan Luu', url: 'https://danluu.com/', tags: ['essays'], when: 'Sep 19', text: 'Long-form essays on programming, hardware and how organisations work, with the data behind each claim.' },
+    { line: 'design', title: 'Refactoring UI', url: 'https://www.refactoringui.com/', tags: ['ui'], when: 'yesterday', text: 'Practical tactics for interface design: visual hierarchy, spacing systems, choosing colours and adding depth.' },
+    { line: 'design', title: 'Lucide icons', url: 'https://lucide.dev/', tags: ['icons'], when: 'Oct 1', text: 'An open-source icon set drawn on one consistent stroke. The line icons in Linemark come from it.' },
+    { line: 'maps', title: 'Transit Maps', url: 'https://transitmap.net/', tags: ['maps', 'type'], when: 'Sep 26', text: 'A long-running blog reviewing transit maps from cities around the world, official and fan-made.' },
+    { line: 'maps', title: 'Axis Maps cartography guide', url: 'https://www.axismaps.com/guide', tags: ['maps', 'reference'], when: 'Sep 24', text: 'A practical guide to making maps: projections, generalisation, colour and labelling, from a cartography studio.' },
+    { line: 'travel', title: 'Rome2Rio', url: 'https://www.rome2rio.com/', tags: ['planning'], when: 'Sep 15', text: 'Compares trains, buses, flights and ferries between any two places, with rough journey times and prices.' },
+    { line: 'travel', title: 'Wikivoyage', url: 'https://www.wikivoyage.org/', tags: ['guides'], when: 'Sep 14', text: 'A free travel guide anyone can edit, with city pages covering getting around, where to eat and where to sleep.' },
+    { line: 'trains', title: 'The Man in Seat 61', url: 'https://www.seat61.com/', tags: ['trains'], when: 'Sep 12', fav: true, text: 'Guides to travelling by train worldwide: routes, fares, sleeper train cabins and how to book tickets.' },
+    { line: 'sleepers', title: 'Nightjet', url: 'https://www.nightjet.com/', tags: ['trains', 'sleeper'], when: 'Sep 12', text: 'Austrian Railways night trains across Europe, with seats, couchettes and sleeper cabins you can book end to end.' },
+    { line: 'sleepers', title: 'European Sleeper', url: 'https://www.europeansleeper.eu/', tags: ['trains', 'sleeper'], when: 'Sep 11', text: 'A cooperative running a sleeper train between Brussels, Amsterdam, Berlin and Prague, with couchettes and sleeper compartments.' },
+    { line: 'japan', title: 'japan-guide.com', url: 'https://www.japan-guide.com/', tags: ['guides', 'trains'], when: 'Sep 9', text: 'A long-standing travel guide to Japan: regions, rail passes, seasons and what to see in each city.' },
+    { line: 'cooking', title: 'Serious Eats', url: 'https://www.seriouseats.com/', tags: ['recipes'], when: '2d ago', fav: true, text: 'Recipes tested many times over, with the food science explained: why you salt meat early and how to get a good sear.' },
+    { line: 'cooking', title: 'Budget Bytes', url: 'https://www.budgetbytes.com/', tags: ['recipes', 'cheap'], when: 'Sep 27', text: 'Recipes priced out per serving, built around a few cheap staples and meals that keep for the week.' },
+    { line: 'work', title: 'Shape Up', url: 'https://basecamp.com/shapeup', tags: ['process'], when: 'Sep 22', text: 'A free book on shaping work into six-week cycles, writing pitches and setting an appetite before you start.' },
+    { line: null, title: 'Harry Beck', url: 'https://en.wikipedia.org/wiki/Harry_Beck', tags: ['maps'], when: 'just now', cover: 'var(--sky)', coverInk: K, text: 'The engineering draughtsman who drew the 1933 London Underground diagram, the model for most transit maps since.' },
+    { line: null, title: 'Hacker News', url: 'https://news.ycombinator.com/', tags: [], when: 'just now', cover: 'var(--clay)', coverInk: W, text: 'Links and discussion on programming, startups and science, ranked by votes.' },
   ];
-  const byId = Object.fromEntries(LINES.map((l) => [l.id, l]));
-  // In All bookmarks, show the lines interleaved, as a mixed library would be.
-  const ORDER = [0, 3, 6, 9, 11, 1, 4, 7, 10, 2, 5, 8];
+  const byId = Object.fromEntries([...SYS, ...LINES].map((l) => [l.id, l]));
+  const kids = (id) => LINES.filter((l) => (l.parent || null) === id);
+  const pathOf = (id) => { const out = []; for (let l = byId[id]; l?.parent; l = byId[l.parent]) out.unshift(byId[l.parent]); return out; };
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const host = (u) => new URL(u).hostname.replace(/^www\./, '');
+  const svg = (name) => `<svg viewBox="0 0 24 24" aria-hidden="true">${ICON[name]}</svg>`;
   const bullet = (l, extra = '') => {
     const f = l.face;
-    const inner = f.icon ? `<svg viewBox="0 0 24 24">${ICON[f.icon]}</svg>` : f.emoji ? `<span class="emo">${f.emoji}</span>` : esc(f.text);
-    return `<span class="b ${extra}" style="background:${l.color};color:${l.ink}" aria-hidden="true">${inner}</span>`;
+    const inner = f.icon ? svg(f.icon) : f.emoji ? `<span class="emo">${f.emoji}</span>` : f.text ? esc(f.text) : '';
+    return `<span class="b${l.ring ? ' ring' : ''} ${extra}" style="background:${l.color};color:${l.ink || 'inherit'};--c:${l.color}" aria-hidden="true">${inner}</span>`;
   };
-  const count = (id) => BOOKMARKS.filter((b) => id === 'all' || b.line === id).length;
+  const inStation = (id) => (b) => id === 'all' || (id === 'unsorted' ? !b.line : id === 'favorites' ? b.fav : b.line === id);
+  const count = (id) => BOOKMARKS.filter(inStation(id)).length;
+  // All bookmarks shows the lines interleaved, as a mixed library would be.
+  const mixed = (() => { const groups = [...LINES.map((l) => BOOKMARKS.filter((b) => b.line === l.id)), BOOKMARKS.filter((b) => !b.line)]; const out = []; for (let i = 0; out.length < BOOKMARKS.length; i++) for (const g of groups) if (g[i]) out.push(g[i]); return out; })();
 
+  const $sys = document.getElementById('sys');
   const $lines = document.getElementById('lines');
-  const $cards = document.getElementById('cards');
+  const $tags = document.getElementById('tags');
+  const $hereId = document.getElementById('here-id');
   const $here = document.getElementById('here');
+  const $above = document.getElementById('above');
+  const $cards = document.getElementById('cards');
   const $q = document.getElementById('q');
   const $stripe = document.getElementById('stripe');
   const $status = document.getElementById('status');
   let current = 'all';
+  let view = 'cards';
   let showAll = false;
+  const open = new Set(['reading', 'design', 'travel', 'trains']);
   const narrow = window.matchMedia('(max-width: 880px)');
 
-  $lines.innerHTML = LINES.map((l) => `<button type="button" class="ln${l.parent ? ' branch' : ''}" data-line="${l.id}" aria-pressed="${l.id === current}"${l.parent ? ` style="--stem:${byId[l.parent].color}" aria-label="${esc(byId[l.parent].name)} › ${esc(l.name)}, ${count(l.id)}"` : ''}>${bullet(l)}<span>${esc(l.name)}</span><span class="n tnum">${count(l.id)}</span></button>`).join('');
+  // ---- the band ----
+  const stopBtn = (l, label) => `<button type="button" class="ln" data-line="${l.id}" aria-pressed="${l.id === current}" aria-label="${esc(label)}, ${count(l.id)}">${bullet(l)}<span class="nm">${esc(l.name)}</span><span class="n tnum" aria-hidden="true">${count(l.id) || ''}</span></button>`;
+  function lineNode(l) {
+    const ks = kids(l.id);
+    const isOpen = open.has(l.id);
+    const label = [...pathOf(l.id).map((p) => p.name), l.name].join(' › ');
+    return `<div class="node"><div class="row" style="--c:${l.color}">${ks.length
+      ? `<button type="button" class="twisty" data-twisty="${l.id}" aria-expanded="${isOpen}" aria-label="${isOpen ? 'Collapse' : 'Expand'} ${esc(l.name)}">${svg('chevron')}</button>`
+      : '<span class="twisty" aria-hidden="true"></span>'}${stopBtn(l, label)}</div>${ks.length ? `<div class="kids" style="--stem:${l.color}"${isOpen ? '' : ' hidden'}>${ks.map(lineNode).join('')}</div>` : ''}</div>`;
+  }
+  const tagCounts = (() => { const m = new Map(); for (const b of BOOKMARKS) for (const t of b.tags) m.set(t, (m.get(t) || 0) + 1); return [...m].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])); })();
+  function renderBand() {
+    $sys.innerHTML = SYS.map((l) => `<div class="row">${stopBtn(l, l.name)}</div>`).join('');
+    $lines.innerHTML = kids(null).map(lineNode).join('');
+    const q = $q.value.trim().toLowerCase();
+    $tags.innerHTML = tagCounts.map(([t, n]) => `<button type="button" class="tag-pill" data-tag="${esc(t)}" aria-pressed="${q === '#' + t}">#${esc(t)}<span class="n tnum">${n}</span></button>`).join('');
+  }
 
+  // ---- search ----
   const terms = (q) => q.toLowerCase().split(/\s+/).filter(Boolean);
   const mark = (text, words) => {
     let out = esc(text);
@@ -574,58 +721,84 @@
     const end = Math.min(text.length, at + 90);
     return (start > 0 ? '…' : '') + mark(text.slice(start, end), words) + (end < text.length ? '…' : '');
   };
-
-  function render() {
-    const raw = $q.value.trim();
+  const matcher = (raw) => {
     const tagTerms = terms(raw).filter((w) => w.startsWith('#')).map((w) => w.slice(1));
     const words = terms(raw).filter((w) => !w.startsWith('#'));
-    const line = byId[current];
-    $here.style.setProperty('--here', line.color);
-    const pool = current === 'all' ? ORDER.map((i) => BOOKMARKS[i]) : BOOKMARKS;
-    const list = pool.filter((b) => {
-      if (current !== 'all' && b.line !== current) return false;
-      if (tagTerms.some((t) => !b.tags.some((x) => x.startsWith(t)))) return false;
-      const hay = `${b.title} ${b.tags.join(' ')} ${host(b.url)} ${b.text}`.toLowerCase();
-      return words.every((w) => hay.includes(w));
-    });
-    const summary = raw ? `${list.length} of ${count(current)} match` : `${list.length} bookmark${list.length === 1 ? '' : 's'}`;
-    const parent = line.parent ? byId[line.parent] : null;
-    $here.innerHTML = `${bullet(line)}<h3>${parent ? `<span class="here-path">${esc(parent.name)} ›</span> ` : ''}${esc(line.name)}</h3><p class="tnum">${summary}</p>`;
-    $status.textContent = `${parent ? parent.name + ' › ' : ''}${line.name}: ${summary}`;
+    const test = (b) => !tagTerms.some((t) => !b.tags.some((x) => x.startsWith(t))) && words.every((w) => `${b.title} ${b.tags.join(' ')} ${host(b.url)} ${b.text}`.toLowerCase().includes(w));
+    return { words, test };
+  };
+
+  // ---- the station ----
+  function card(b, words) {
+    const l = byId[b.line];
+    const h = host(b.url);
+    const inTitle = words.length && words.every((w) => `${b.title} ${b.tags.join(' ')}`.toLowerCase().includes(w));
+    const snip = words.length && !inTitle ? snippet(b.text, words) : '';
+    const pc = l ? l.color : b.cover, pi = l ? l.ink : b.coverInk;
+    const onLine = l ? bullet(l, 'on-line') : '<span class="b on-line ring" aria-hidden="true"></span>';
+    return `<article class="card">
+      <div class="cover-wrap"><div class="cov" style="--pc:${pc};--pi:${pi}"><span class="fav" aria-hidden="true">${esc(h[0].toUpperCase())}</span><span class="host">${esc(h).replace(/\./g, '.<wbr>')}</span></div>${onLine}</div>
+      <div class="card-body">
+        ${l ? bullet(l, 'hl') : '<span class="b hl ring" aria-hidden="true"></span>'}
+        <h4><a href="${esc(b.url)}" rel="noopener">${words.length ? mark(b.title, words) : esc(b.title)}</a></h4>
+        ${snip ? `<p class="snip"><span class="tag">IN PAGE</span>${snip}</p>` : `<p class="excerpt">${esc(b.text)}</p>`}
+        ${b.tags.length ? `<p class="tags">${b.tags.map((t) => '#' + esc(t)).join(' ')}</p>` : ''}
+        <p class="meta"><span class="fv" aria-hidden="true">${esc(h[0].toUpperCase())}</span><span class="h">${esc(h)}</span><span class="w">· ${esc(b.when)}</span>${b.fav ? `<svg class="star" viewBox="0 0 24 24" role="img" aria-label="Favorite">${ICON.star}</svg>` : ''}</p>
+      </div>
+    </article>`;
+  }
+  function render() {
+    const raw = $q.value.trim();
+    const { words, test } = matcher(raw);
+    const station = byId[current];
+    const pool = (current === 'all' ? mixed : BOOKMARKS).filter(inStation(current));
+    const list = pool.filter(test);
+    const path = pathOf(current);
+    const summary = raw ? `${list.length} of ${pool.length} match` : `${list.length} link${list.length === 1 ? '' : 's'}`;
+    $here.style.setProperty('--c', current === 'all' ? 'var(--brand)' : current === 'unsorted' ? 'var(--ink-3)' : station.color);
+    $hereId.innerHTML = `${current === 'all' ? `<span class="b" style="background:var(--brand);color:var(--brand-ink)" aria-hidden="true">${svg('grid')}</span>` : bullet(station)}
+      <div class="here-text">${path.length ? `<nav class="here-path" aria-label="Parent lines">${path.map((p) => `<button type="button" data-line="${p.id}"><span class="dot" style="background:${p.color}"></span>${esc(p.name)}</button>`).join(svg('chevron'))}</nav>` : ''}
+        <h3>${esc(station.name)} <span class="count tnum">${raw ? `<b>${list.length}</b> of ${pool.length} match` : `<b>${list.length}</b> link${list.length === 1 ? '' : 's'}`}</span></h3></div>`;
+    $status.textContent = `${[...path.map((p) => p.name), station.name].join(' › ')}: ${summary}`;
+    const ks = kids(LINES.some((l) => l.id === current) ? current : '-');
+    const elsewhere = raw && current !== 'all' ? mixed.filter((b) => !inStation(current)(b) && test(b)).length : 0;
+    $above.innerHTML = (ks.length && !raw ? `<div class="transfers"><span>Branches</span>${ks.map((k) => `<button type="button" class="fchip" data-line="${k.id}">${bullet(k)}${esc(k.name)}<span class="n tnum">${count(k.id)}</span></button>`).join('')}</div>` : '')
+      + (elsewhere ? `<p class="elsewhere">${elsewhere} more in other lines. <button type="button" data-line="all">Search All bookmarks</button></p>` : '');
+    $cards.className = `cards ${view === 'list' ? 'list' : ''}`;
     if (!list.length) {
-      $cards.innerHTML = `<div class="empty"><strong>No sample bookmarks match “${esc(raw)}”.</strong>Try “sleeper train” or #type, or choose All bookmarks.</div>`;
+      $cards.innerHTML = `<div class="empty"><strong>${raw ? `No sample bookmarks here match “${esc(raw)}”.` : 'Nothing on this line yet.'}</strong>Try “sleeper train” or #type, or choose All bookmarks.</div>`;
       return;
     }
     const cut = narrow.matches && !showAll && !raw && list.length > 6;
-    $cards.innerHTML = (cut ? list.slice(0, 6) : list).map((b) => {
-      const l = byId[b.line];
-      const inTitle = words.length && words.every((w) => `${b.title} ${b.tags.join(' ')}`.toLowerCase().includes(w));
-      const snip = words.length && !inTitle ? snippet(b.text, words) : '';
-      return `<article class="card">
-        <div class="cov" style="background:${l.color};color:${l.ink}"><span class="fav" aria-hidden="true">${esc(host(b.url)[0].toUpperCase())}</span><span class="host">${esc(host(b.url)).replace(/\./g, '.<wbr>')}</span></div>
-        <div class="card-body">
-          <h4><a href="${esc(b.url)}" rel="noopener">${words.length ? mark(b.title, words) : esc(b.title)}</a></h4>
-          ${snip ? `<p class="snip"><span class="tag">IN PAGE</span>${snip}</p>` : ''}
-          <p class="meta">${bullet(l)}<span>${esc(l.name)} · ${b.tags.map((t) => '#' + esc(t)).join(' ')}</span></p>
-        </div>
-      </article>`;
-    }).join('') + (cut ? `<button type="button" class="more" id="more">Show all ${list.length} sample bookmarks</button>` : '');
+    $cards.innerHTML = (cut ? list.slice(0, 6) : list).map((b) => card(b, words)).join('') + (cut ? `<button type="button" class="more" id="more">Show all ${list.length} sample bookmarks</button>` : '');
   }
 
   function choose(id) {
     current = id;
-    for (const btn of $lines.querySelectorAll('.ln')) btn.setAttribute('aria-pressed', String(btn.dataset.line === id));
+    showAll = false;
+    for (let l = byId[id]; l?.parent; l = byId[l.parent]) open.add(l.parent);
     const l = byId[id];
     $stripe.classList.remove('arrive', 'on');
-    if (id !== 'all') { $stripe.style.setProperty('--sweep', l.color); void $stripe.offsetWidth; $stripe.classList.add('on'); }
+    if (LINES.includes(l)) { $stripe.style.setProperty('--sweep', l.color); void $stripe.offsetWidth; $stripe.classList.add('on'); }
+    renderBand();
     render();
   }
 
-  $lines.addEventListener('click', (e) => { const b = e.target.closest('.ln'); if (b) choose(b.dataset.line); });
-  $q.addEventListener('input', render);
-  $cards.addEventListener('click', (e) => { if (e.target.id === 'more') { showAll = true; render(); $cards.querySelectorAll('h4 a')[6]?.focus(); } });
+  document.getElementById('try').addEventListener('click', (e) => {
+    const tw = e.target.closest('[data-twisty]');
+    if (tw) { const id = tw.dataset.twisty; open.has(id) ? open.delete(id) : open.add(id); renderBand(); $lines.querySelector(`[data-twisty="${id}"]`)?.focus(); return; }
+    const tag = e.target.closest('[data-tag]');
+    if (tag) { const q = '#' + tag.dataset.tag; $q.value = $q.value.trim().toLowerCase() === q ? '' : q; current = 'all'; renderBand(); render(); $tags.querySelector(`[data-tag="${tag.dataset.tag}"]`)?.focus(); return; }
+    const v = e.target.closest('[data-view]');
+    if (v) { view = v.dataset.view; for (const b of document.querySelectorAll('.seg [data-view]')) b.setAttribute('aria-pressed', String(b === v)); render(); return; }
+    const ln = e.target.closest('[data-line]');
+    if (ln) { const wasBand = !!ln.closest('.lines'); choose(ln.dataset.line); if (wasBand) document.querySelector(`.lines [data-line="${ln.dataset.line}"]`)?.focus(); return; }
+    if (e.target.id === 'more') { showAll = true; render(); $cards.querySelectorAll('h4 a')[6]?.focus(); }
+  });
+  $q.addEventListener('input', () => { renderBand(); render(); });
   narrow.addEventListener('change', render);
-  document.querySelector('.tries').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; $q.value = b.dataset.q; render(); $q.focus(); });
+  document.querySelector('.tries').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; $q.value = b.dataset.q; renderBand(); render(); $q.focus(); });
+  renderBand();
   render();
 
   // The route: the ring rides to the stop you're at.

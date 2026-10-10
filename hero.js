@@ -23,7 +23,7 @@
     { c: '--magenta', p: [[4, 10], [10, 16], [36, 16]], trains: 1 },
     { c: '--teal', p: [[-38, -20], [-14, -20], [-6, -12], [10, -12], [22, -24], [34, -24]], trains: 1 },
     { c: '--amber', p: [[12, -38], [12, -6], [24, 6], [40, 6]], trains: 1 },
-    { c: '--green', p: [[-10, 8], [-10, 18], [-4, 24], [16, 24]], trains: 1 },
+    { c: '--green', p: [[-18, 8], [-18, 18], [-12, 24], [16, 24]], trains: 1 }, // leaves the trunk on its straight, so the two share one station
   ];
   const STEP = 0.35, HALF = 0.55, RISE = 0.32;
 
