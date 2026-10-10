@@ -115,7 +115,7 @@
   .lib { margin-top: 20px; background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; display: grid; grid-template-columns: 228px minmax(0, 1fr); overflow: hidden; box-shadow: var(--shadow-1); scroll-margin-top: 24px; }
   .lines { background: var(--band); color: var(--band-ink); padding: 14px 10px; display: flex; flex-direction: column; gap: 2px; }
   #lines { display: flex; flex-direction: column; gap: 2px; }
-  .lines h3 { font-size: 0.71875rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--band-ink-2); font-stretch: 87.5%; padding: 4px 10px 8px; }
+  .lines .group-label { font-size: 0.71875rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--band-ink-2); font-stretch: 87.5%; padding: 4px 10px 8px; }
   .ln { width: 100%; display: flex; align-items: center; gap: 10px; min-height: 38px; padding: 0 10px; border: 0; border-radius: 6px; background: none; color: var(--band-ink); font-weight: 620; font-stretch: 87.5%; font-size: 0.9375rem; text-align: left; transition: background-color .15s; }
   .ln:hover { background: var(--band-hover); }
   .ln[aria-pressed='true'] { background: var(--band-active); }
@@ -145,7 +145,7 @@
   .more:hover { background: var(--hover); }
   .card { container-type: inline-size; background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; transition: transform .25s var(--ease), box-shadow .25s var(--ease); }
   .card:hover { transform: translateY(-2px); box-shadow: var(--shadow-2); }
-  .cov { aspect-ratio: 16 / 10; position: relative; display: flex; align-items: flex-end; padding: 12px; color: #fff; }
+  .cov { aspect-ratio: 16 / 10; position: relative; display: flex; align-items: flex-end; padding: 12px; color: var(--on-line); }
   .cov .host { font-weight: 760; font-stretch: 80%; font-size: clamp(0.875rem, 7.3cqi, 1.75rem); line-height: 1.1; letter-spacing: -0.01em; overflow-wrap: break-word; min-width: 0; }
   .cov .fav { position: absolute; left: 12px; top: 12px; width: 26px; height: 26px; border-radius: 6px; background: var(--tile); color: var(--brand-ink); display: grid; place-items: center; font-weight: 800; font-size: 0.8125rem; }
   .card-body { padding: 11px 13px 13px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
@@ -213,7 +213,7 @@
   .scope code { display: block; margin-top: 14px; font-family: var(--font); font-stretch: 87.5%; font-size: 0.875rem; color: var(--band-ink-2); overflow-wrap: anywhere; }
   .scope p.only { margin-top: 16px; color: var(--band-ink-2); font-size: 0.9375rem; }
   .facts { display: grid; gap: 22px; }
-  .facts h3 { font-size: 1.125rem; font-weight: 740; font-stretch: 85%; }
+  .facts h3 { font-size: 1.25rem; font-weight: 740; font-stretch: 85%; }
   .facts p { color: var(--ink-2); margin-top: 4px; max-width: 62ch; }
   .facts a, .note a, footer a { color: var(--brand-text); text-underline-offset: 3px; }
   .note { margin: 26px 0 0 46px; padding: 16px 20px; border: 1px solid var(--rule); border-radius: 10px; color: var(--ink-2); font-size: 0.9375rem; max-width: 72ch; }
@@ -249,7 +249,7 @@
     .sign .lede { font-size: 1.0625rem; }
     .lib { grid-template-columns: minmax(0, 1fr); }
     .lines { flex-direction: row; overflow-x: auto; padding: 10px; gap: 4px; }
-    .lines h3, .lines .hint { display: none; }
+    .lines .group-label, .lines .hint { display: none; }
     #lines { flex-direction: row; }
     .ln { flex: none; width: auto; padding: 0 12px 0 8px; }
     .work { padding: 14px 14px 18px; }
@@ -340,7 +340,7 @@
       <section class="lib" id="try" aria-labelledby="try-h">
         <h2 class="sr" id="try-h">Try it: a sample library</h2>
         <div class="lines">
-          <h3 id="lines-label">Lines</h3>
+          <p class="group-label" id="lines-label">Lines</p>
           <div id="lines" role="group" aria-labelledby="lines-label"></div>
           <p class="hint">A sample library to play with. Choose a line, or search the words inside the pages.</p>
         </div>
@@ -354,7 +354,8 @@
           </div>
           <div class="tries">Try <button type="button" data-q="sleeper train">sleeper train</button><button type="button" data-q="#type">#type</button><button type="button" data-q="without a server">without a server</button></div>
           <div class="here" id="here"></div>
-          <div class="cards" id="cards" aria-live="polite"></div>
+          <p class="sr" id="status" role="status"></p>
+          <div class="cards" id="cards"></div>
         </div>
       </section>
 
@@ -508,6 +509,7 @@
   const $here = document.getElementById('here');
   const $q = document.getElementById('q');
   const $stripe = document.getElementById('stripe');
+  const $status = document.getElementById('status');
   let current = 'all';
   let showAll = false;
   const narrow = window.matchMedia('(max-width: 880px)');
@@ -545,7 +547,9 @@
       const hay = `${b.title} ${b.tags.join(' ')} ${host(b.url)} ${b.text}`.toLowerCase();
       return words.every((w) => hay.includes(w));
     });
-    $here.innerHTML = `${bullet(line)}<h3>${esc(line.name)}</h3><p class="tnum">${raw ? `${list.length} of ${count(current)} match` : `${list.length} bookmark${list.length === 1 ? '' : 's'}`}</p>`;
+    const summary = raw ? `${list.length} of ${count(current)} match` : `${list.length} bookmark${list.length === 1 ? '' : 's'}`;
+    $here.innerHTML = `${bullet(line)}<h3>${esc(line.name)}</h3><p class="tnum">${summary}</p>`;
+    $status.textContent = `${line.name}: ${summary}`;
     if (!list.length) {
       $cards.innerHTML = `<div class="empty"><strong>No sample bookmarks match “${esc(raw)}”.</strong>Try “sleeper train” or #type, or choose All bookmarks.</div>`;
       return;
