@@ -19,8 +19,8 @@
     --band: #16171a; --band-ink: #f4f3ef; --band-ink-2: #a8aab0; --band-rule: #2b2d32; --band-hover: #222429; --band-active: #2e3037;
     --brand: #ff5a1f; --brand-hover: #ff6f3a; --brand-ink: #16171a; --brand-text: #c23c0b; --brand-soft: rgba(255, 90, 31, 0.13);
     --danger: #c4282f; --danger-soft: rgba(196, 40, 47, 0.1); --warn-ink: #8a5a00; --warn-soft: rgba(240, 168, 0, 0.17);
-    --tile: rgba(255, 255, 255, 0.94); --on-color-rule: rgba(0, 0, 0, 0.12);
-    --cobalt: #2f5bd8; --magenta: #c2255c; --teal: #0b7a75; --amber: #f0a800; --violet: #7048e8;
+    --tile: rgba(255, 255, 255, 0.94); --band-selection: rgba(255, 90, 31, 0.4); --on-color-rule: rgba(0, 0, 0, 0.12);
+    --cobalt: #2f5bd8; --magenta: #c2255c; --teal: #0b7a75; --amber: #f0a800; --violet: #7048e8; --green: #2f9e44; --on-line: #ffffff;
     --shadow-1: 0 1px 2px rgba(22, 23, 26, 0.06);
     --shadow-2: 0 8px 18px -6px rgba(22, 23, 26, 0.16), 0 2px 4px rgba(22, 23, 26, 0.06);
     --ease: cubic-bezier(0.16, 1, 0.3, 1);
@@ -75,16 +75,20 @@
   /* The shell: the signage band and the platform */
   .shell { display: grid; grid-template-columns: 300px minmax(0, 1fr); min-height: 100vh; }
   .band { position: sticky; top: 0; height: 100vh; background: var(--band); color: var(--band-ink); display: flex; flex-direction: column; padding: 28px 24px 24px; overflow-y: auto; }
-  .band ::selection { background: rgba(255, 90, 31, 0.4); }
+  .band ::selection { background: var(--band-selection); }
   .wordmark { display: flex; align-items: center; gap: 11px; font-size: 1.5rem; font-weight: 760; font-stretch: 87.5%; letter-spacing: -0.02em; text-decoration: none; color: var(--band-ink); width: max-content; }
   .wordmark .b { width: 32px; height: 32px; background: var(--brand); color: var(--brand-ink); font-size: 1.0625rem; box-shadow: none; }
   .route { list-style: none; padding: 0; margin: 40px 0 0; position: relative; }
-  .route::before { content: ''; position: absolute; left: 15px; top: 24px; bottom: 24px; width: 5px; border-radius: 2px; background: var(--brand); }
+  /* The trunk is Linemark orange; each stop is an interchange in its own line colour, and branches hang off a stem in their parent's colour, as sub-lines do in the app. */
+  .route::before { content: ''; position: absolute; left: 14px; top: 24px; bottom: 24px; width: 5px; border-radius: 2px; background: var(--brand); z-index: 1; }
   .route a { position: relative; display: flex; align-items: center; gap: 16px; height: 48px; padding: 0 10px 0 4px; border-radius: 6px; text-decoration: none; font-weight: 650; font-stretch: 87.5%; color: var(--band-ink); transition: background-color .2s; }
   .route a:hover { background: var(--band-hover); }
   .route a[aria-current] { background: var(--band-active); }
-  .route .dot { width: 24px; height: 24px; border-radius: 50%; background: var(--band); border: 5px solid var(--brand); flex: none; position: relative; z-index: 1; }
-  .route .train { position: absolute; left: 4px; top: 12px; width: 24px; height: 24px; border-radius: 50%; background: var(--brand); box-shadow: 0 0 0 3px var(--band), 0 0 0 5px var(--band-ink); z-index: 2; pointer-events: none; transform: translateY(var(--y, 0px)); transition: transform .55s var(--ease); }
+  .route .dot { width: 24px; height: 24px; border-radius: 50%; background: var(--band); border: 5px solid var(--l, var(--brand)); flex: none; position: relative; z-index: 2; }
+  .branch { list-style: none; padding: 0; margin: 0 0 0 22px; position: relative; }
+  .branch::before { content: ''; position: absolute; left: 0; top: -16px; width: 22px; height: 42px; border-left: 5px solid var(--stem); border-bottom: 5px solid var(--stem); border-bottom-left-radius: 12px; z-index: 1; }
+  .branch a { padding-left: 18px; font-weight: 620; }
+  .route .train { position: absolute; left: 4px; top: 12px; width: 24px; height: 24px; border-radius: 50%; background: var(--tl, var(--brand)); box-shadow: 0 0 0 3px var(--band), 0 0 0 5px var(--band-ink); z-index: 3; pointer-events: none; transform: translate(var(--x, 0px), var(--y, 0px)); transition: transform .55s var(--ease), background-color .55s var(--ease); }
   .route small { margin-left: auto; color: var(--band-ink-2); font-weight: 500; font-size: 0.8125rem; font-stretch: 100%; }
   .band-foot { margin-top: auto; padding-top: 28px; }
   .band-foot .btn { width: 100%; justify-content: flex-start; padding-left: 20px; }
@@ -111,7 +115,7 @@
   .lib { margin-top: 20px; background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; display: grid; grid-template-columns: 228px minmax(0, 1fr); overflow: hidden; box-shadow: var(--shadow-1); scroll-margin-top: 24px; }
   .lines { background: var(--band); color: var(--band-ink); padding: 14px 10px; display: flex; flex-direction: column; gap: 2px; }
   #lines { display: flex; flex-direction: column; gap: 2px; }
-  .lines h2 { font-size: 0.71875rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--band-ink-2); font-stretch: 87.5%; padding: 4px 10px 8px; }
+  .lines h3 { font-size: 0.71875rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--band-ink-2); font-stretch: 87.5%; padding: 4px 10px 8px; }
   .ln { width: 100%; display: flex; align-items: center; gap: 10px; min-height: 38px; padding: 0 10px; border: 0; border-radius: 6px; background: none; color: var(--band-ink); font-weight: 620; font-stretch: 87.5%; font-size: 0.9375rem; text-align: left; transition: background-color .15s; }
   .ln:hover { background: var(--band-hover); }
   .ln[aria-pressed='true'] { background: var(--band-active); }
@@ -133,6 +137,7 @@
   .here { display: flex; align-items: center; gap: 12px; margin: 18px 0 14px; padding-bottom: 12px; border-bottom: 4px solid var(--here, var(--brand)); transition: border-color .4s var(--ease); }
   .here .b { width: 30px; height: 30px; font-size: 0.8125rem; }
   .here h3 { font-size: 1.375rem; font-weight: 760; font-stretch: 85%; letter-spacing: -0.02em; line-height: 1.1; }
+  .here { flex-wrap: wrap; row-gap: 4px; }
   .here p { margin-left: auto; color: var(--ink-3); font-size: 0.875rem; }
   .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(176px, 1fr)); gap: 14px; }
   @media (min-width: 1200px) { .cards { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
@@ -142,7 +147,7 @@
   .card:hover { transform: translateY(-2px); box-shadow: var(--shadow-2); }
   .cov { aspect-ratio: 16 / 10; position: relative; display: flex; align-items: flex-end; padding: 12px; color: #fff; }
   .cov .host { font-weight: 760; font-stretch: 80%; font-size: clamp(0.875rem, 7.3cqi, 1.75rem); line-height: 1.1; letter-spacing: -0.01em; overflow-wrap: break-word; min-width: 0; }
-  .cov .fav { position: absolute; left: 12px; top: 12px; width: 26px; height: 26px; border-radius: 6px; background: var(--tile); color: #16171a; display: grid; place-items: center; font-weight: 800; font-size: 0.8125rem; }
+  .cov .fav { position: absolute; left: 12px; top: 12px; width: 26px; height: 26px; border-radius: 6px; background: var(--tile); color: var(--brand-ink); display: grid; place-items: center; font-weight: 800; font-size: 0.8125rem; }
   .card-body { padding: 11px 13px 13px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
   .card h4 { margin: 0; font-size: 0.96875rem; font-weight: 650; line-height: 1.32; }
   .card h4 a { text-decoration: none; }
@@ -157,8 +162,16 @@
 
   /* Stops */
   .stop { padding-top: 104px; scroll-margin-top: 8px; }
-  .stop-head { display: flex; align-items: center; gap: 16px; }
-  .stop-head .ring { width: 30px; height: 30px; border-radius: 50%; border: 6px solid var(--brand); background: var(--ground); flex: none; }
+  /* Each stop is a station sign: its ring, its name, and a 4px rule in its line colour.
+     A branch shows its parent's path above the name, as sub-lines do in the app. */
+  .stop-head { padding-bottom: 16px; border-bottom: 4px solid var(--l, var(--brand)); }
+  .stop-name { display: flex; align-items: center; gap: 16px; }
+  .path { display: flex; align-items: center; gap: 6px; margin: 0 0 10px 46px; font-size: 0.875rem; font-weight: 650; font-stretch: 87.5%; color: var(--ink-2); }
+  .path a { display: inline-flex; align-items: center; gap: 7px; text-decoration: none; border-radius: 4px; }
+  .path a:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+  .path .pb { width: 12px; height: 12px; border-radius: 50%; flex: none; }
+  .path svg { width: 14px; height: 14px; fill: none; stroke: var(--ink-3); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+  .stop-head .ring { width: 30px; height: 30px; border-radius: 50%; border: 6px solid var(--l, var(--brand)); background: var(--ground); flex: none; }
   .stop h2 { font-size: clamp(2rem, 3.6vw, 3rem); font-weight: 770; font-stretch: 82%; letter-spacing: -0.025em; line-height: 1.02; text-wrap: balance; }
   .stop .lede { font-size: 1.1875rem; line-height: 1.55; color: var(--ink-2); max-width: 58ch; margin: 18px 0 0 46px; }
   .split { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 48px; align-items: start; margin-top: 34px; padding-left: 46px; }
@@ -172,7 +185,8 @@
   .rows dd { color: var(--ink-2); }
   kbd { font: inherit; font-weight: 650; font-size: 0.875rem; padding: 1px 7px; border-radius: 4px; border: 1px solid var(--rule-strong); border-bottom-width: 2px; background: var(--surface); color: var(--ink); white-space: nowrap; }
   .chip { display: inline-flex; align-items: center; height: 24px; padding: 0 9px; border-radius: 999px; background: var(--hover); color: var(--ink-2); font-size: 0.8125rem; font-weight: 650; margin: 2px 4px 2px 0; }
-  .pill { display: inline-flex; align-items: center; gap: 5px; height: 22px; padding: 0 8px 0 6px; border-radius: 999px; font-size: 0.78125rem; font-weight: 650; font-stretch: 87.5%; margin-right: 4px; }
+  .pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .pill { display: inline-flex; align-items: center; gap: 5px; height: 22px; padding: 0 8px 0 6px; border-radius: 999px; font-size: 0.78125rem; font-weight: 650; font-stretch: 87.5%; }
   .pill::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
   .pill.dead { background: var(--danger-soft); color: var(--danger); }
   .pill.warn { background: var(--warn-soft); color: var(--warn-ink); }
@@ -202,7 +216,7 @@
   .facts h3 { font-size: 1.125rem; font-weight: 740; font-stretch: 85%; }
   .facts p { color: var(--ink-2); margin-top: 4px; max-width: 62ch; }
   .facts a, .note a, footer a { color: var(--brand-text); text-underline-offset: 3px; }
-  .note { margin: 26px 0 0 46px; padding: 16px 20px; border: 1px solid var(--rule); border-radius: 10px; color: var(--ink-2); font-size: 0.9375rem; max-width: 86ch; }
+  .note { margin: 26px 0 0 46px; padding: 16px 20px; border: 1px solid var(--rule); border-radius: 10px; color: var(--ink-2); font-size: 0.9375rem; max-width: 72ch; }
 
   /* Terminus */
   .terminus { margin-top: 104px; background: var(--band); color: var(--band-ink); border-radius: 10px; padding: 56px 56px 60px; position: relative; overflow: hidden; scroll-margin-top: 8px; }
@@ -223,18 +237,19 @@
   }
   @media (max-width: 880px) {
     .shell { display: block; }
-    .band { position: sticky; top: 0; z-index: 10; height: auto; flex-direction: row; align-items: center; justify-content: space-between; padding: 10px 16px; overflow: visible; }
+    .band { position: sticky; top: 0; z-index: 10; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; padding: 8px 16px; overflow: visible; }
+    .wordmark { min-height: 44px; }
     .wordmark { font-size: 1.25rem; }
     .wordmark .b { width: 28px; height: 28px; font-size: 0.9375rem; }
     .route, .band-foot p { display: none; }
     .band-foot { margin: 0; padding: 0; }
-    .band-foot .btn { width: auto; height: 40px; padding: 0 16px 0 18px; font-size: 0.9375rem; }
+    .band-foot .btn { width: auto; height: 44px; padding: 0 16px 0 18px; font-size: 0.9375rem; }
     main { padding: 16px 16px 0; }
     .sign { padding: 30px 22px 34px; }
     .sign .lede { font-size: 1.0625rem; }
     .lib { grid-template-columns: minmax(0, 1fr); }
     .lines { flex-direction: row; overflow-x: auto; padding: 10px; gap: 4px; }
-    .lines h2, .lines .hint { display: none; }
+    .lines h3, .lines .hint { display: none; }
     #lines { flex-direction: row; }
     .ln { flex: none; width: auto; padding: 0 12px 0 8px; }
     .work { padding: 14px 14px 18px; }
@@ -243,14 +258,32 @@
     .cov .host { font-stretch: 75%; }
     .stop { padding-top: 72px; }
     .stop { position: relative; }
-    .stop::before { content: ''; position: absolute; left: 11px; width: 5px; border-radius: 2px; background: var(--brand); top: 87px; bottom: -87px; }
+    /* the route on phones: an orange trunk through every stop, and each branch leaving its parent on a stem in the parent's colour */
+    .stop::before { content: ''; position: absolute; left: 11px; width: 5px; background: var(--brand); top: 0; bottom: 0; }
+    #save::before { top: 87px; border-radius: 2px 2px 0 0; }
     #google::before { bottom: -72px; }
+    .has-branch::after { content: ''; position: absolute; left: 20px; top: 92px; bottom: 0; width: 5px; background: var(--l); }
+    .is-branch .stop-name { position: relative; }
+    .is-branch .stop-name::before { content: ''; position: absolute; left: 20px; bottom: calc(50% - 2.5px); height: 180px; width: 14px; border-left: 5px solid var(--stem); border-bottom: 5px solid var(--stem); border-bottom-left-radius: 12px; }
+    .is-branch .stop-name .ring { position: relative; z-index: 1; }
+    .is-branch .stop-name .ring { margin-left: 30px; }
+    .is-branch .path { margin-left: 76px; }
+    .is-branch .stop-name { gap: 12px; }
     .stop-head .ring { width: 27px; height: 27px; border-width: 5px; position: relative; z-index: 1; }
     .stop .lede, .split, .table, .consent, .note { margin-left: 40px; padding-left: 0; }
     .split.stack .rows { grid-template-columns: minmax(0, 1fr); }
     .rows > div, .table > div { grid-template-columns: minmax(0, 1fr); gap: 4px; }
     .table > div { padding: 16px 18px; }
     .terminus { margin-top: 72px; padding: 36px 22px 42px; }
+  }
+  @media (pointer: coarse), (max-width: 880px) {
+    .tries button, .more, .ln { min-height: 44px; }
+    .search input { height: 46px; }
+    .card h4 a { display: block; padding: 12px 0; margin: -12px 0; }
+    .path a { min-height: 44px; }
+    .path { margin-bottom: 0; }
+    footer { row-gap: 0; }
+    footer a { display: inline-flex; align-items: center; min-height: 44px; }
   }
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
@@ -271,13 +304,19 @@
     <nav aria-label="On this page">
       <ol class="route" id="route">
         <li class="train" role="presentation" aria-hidden="true"></li>
-        <li><a href="#try"><span class="dot" aria-hidden="true"></span>Try it<small>live</small></a></li>
-        <li><a href="#save"><span class="dot" aria-hidden="true"></span>Save in one gesture</a></li>
-        <li><a href="#find"><span class="dot" aria-hidden="true"></span>Find anything again</a></li>
-        <li><a href="#health"><span class="dot" aria-hidden="true"></span>Keep links healthy</a></li>
-        <li><a href="#private"><span class="dot" aria-hidden="true"></span>Private by default</a></li>
-        <li><a href="#google"><span class="dot" aria-hidden="true"></span>Your Google account</a></li>
-        <li><a href="#install"><span class="dot" aria-hidden="true"></span>Install</a></li>
+        <li><a href="#try" style="--l: var(--brand)"><span class="dot" aria-hidden="true"></span>Try it<small>live</small></a></li>
+        <li><a href="#save" style="--l: var(--teal)"><span class="dot" aria-hidden="true"></span>Save in one gesture</a></li>
+        <li><a href="#find" style="--l: var(--cobalt)"><span class="dot" aria-hidden="true"></span>Find anything again</a>
+          <ol class="branch" style="--stem: var(--cobalt)">
+            <li><a href="#health" style="--l: var(--magenta)"><span class="dot" aria-hidden="true"></span>Keep links healthy</a></li>
+          </ol>
+        </li>
+        <li><a href="#private" style="--l: var(--green)"><span class="dot" aria-hidden="true"></span>Private by default</a>
+          <ol class="branch" style="--stem: var(--green)">
+            <li><a href="#google" style="--l: var(--amber)"><span class="dot" aria-hidden="true"></span>Your Google account</a></li>
+          </ol>
+        </li>
+        <li><a href="#install" style="--l: var(--brand)"><span class="dot" aria-hidden="true"></span>Install</a></li>
       </ol>
     </nav>
     <div class="band-foot">
@@ -298,9 +337,10 @@
         <div class="stripe arrive" id="stripe" aria-hidden="true"><i style="background:var(--brand)"></i><i style="background:var(--cobalt)"></i><i style="background:var(--magenta)"></i><i style="background:var(--teal)"></i><i style="background:var(--amber)"></i><span class="sweep"></span></div>
       </header>
 
-      <section class="lib" id="try" aria-label="Try it: a sample library">
+      <section class="lib" id="try" aria-labelledby="try-h">
+        <h2 class="sr" id="try-h">Try it: a sample library</h2>
         <div class="lines">
-          <h2 id="lines-label">Lines</h2>
+          <h3 id="lines-label">Lines</h3>
           <div id="lines" role="group" aria-labelledby="lines-label"></div>
           <p class="hint">A sample library to play with. Choose a line, or search the words inside the pages.</p>
         </div>
@@ -318,8 +358,8 @@
         </div>
       </section>
 
-      <section class="stop" id="save" aria-labelledby="save-h">
-        <div class="stop-head"><span class="ring" aria-hidden="true"></span><h2 id="save-h">Save in one gesture</h2></div>
+      <section class="stop" id="save" style="--l: var(--teal)" aria-labelledby="save-h">
+        <div class="stop-head"><div class="stop-name"><span class="ring" aria-hidden="true"></span><h2 id="save-h">Save in one gesture</h2></div></div>
         <p class="lede">Saving takes one click. Linemark keeps the page's title, description and a cover image, stored on your computer. Filing can wait: new saves go to <strong>Unsorted</strong> until you put them on a line.</p>
         <div class="split narrow-fig">
           <dl class="rows">
@@ -336,8 +376,8 @@
         </div>
       </section>
 
-      <section class="stop" id="find" aria-labelledby="find-h">
-        <div class="stop-head"><span class="ring" aria-hidden="true"></span><h2 id="find-h">Find anything again</h2></div>
+      <section class="stop has-branch" id="find" style="--l: var(--cobalt)" aria-labelledby="find-h">
+        <div class="stop-head"><div class="stop-name"><span class="ring" aria-hidden="true"></span><h2 id="find-h">Find anything again</h2></div></div>
         <p class="lede">You remember what a page said, not what it was called. Linemark searches the text of the pages you save, and shows you the passage that matched.</p>
         <div class="split">
           <dl class="rows">
@@ -354,12 +394,12 @@
         </div>
       </section>
 
-      <section class="stop" id="health" aria-labelledby="health-h">
-        <div class="stop-head"><span class="ring" aria-hidden="true"></span><h2 id="health-h">Keep links healthy</h2></div>
+      <section class="stop is-branch" id="health" style="--stem: var(--cobalt); --l: var(--magenta)" aria-labelledby="health-h">
+        <div class="stop-head"><p class="path"><a href="#find"><span class="pb" style="background: var(--cobalt)" aria-hidden="true"></span>Find anything again</a><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></p><div class="stop-name"><span class="ring" aria-hidden="true"></span><h2 id="health-h">Keep links healthy</h2></div></div>
         <p class="lede">Pages move and disappear. Linemark checks your links and sorts out the ones that need attention.</p>
         <div class="split stack">
           <dl class="rows">
-            <div><dt>Link check</dt><dd><span class="pill dead">Dead</span><span class="pill moved">Moved</span><span class="pill warn">Unverified</span> Every link sorted, so you only fix what's really broken.</dd></div>
+            <div><dt>Link check</dt><dd>Every link is sorted, so you only fix what's really broken.<span class="pills"><span class="pill dead">Dead</span><span class="pill moved">Moved</span><span class="pill warn">Unverified</span></span></dd></div>
             <div><dt>Moved pages</dt><dd>Update a bookmark to its new address in one click.</dd></div>
             <div><dt>Duplicates</dt><dd>Finds the same page saved twice and merges tags and notes into the copy it keeps.</dd></div>
             <div><dt>Trash</dt><dd>Nothing is deleted straight away. Undo, or restore from Trash.</dd></div>
@@ -371,8 +411,8 @@
         </div>
       </section>
 
-      <section class="stop" id="private" aria-labelledby="private-h">
-        <div class="stop-head"><span class="ring" aria-hidden="true"></span><h2 id="private-h">Private by default</h2></div>
+      <section class="stop has-branch" id="private" style="--l: var(--green)" aria-labelledby="private-h">
+        <div class="stop-head"><div class="stop-name"><span class="ring" aria-hidden="true"></span><h2 id="private-h">Private by default</h2></div></div>
         <p class="lede">Linemark is local by default. There is no Linemark account and no Linemark server, so there is nothing for anyone to collect.</p>
         <dl class="table">
           <div><dt><span class="b" aria-hidden="true"><svg viewBox="0 0 24 24"><line x1="22" x2="2" y1="12" y2="12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg></span>Your library</dt><dd>Stored in your browser profile, on your computer. Covers are downloaded once and kept there too.</dd></div>
@@ -383,8 +423,8 @@
         </dl>
       </section>
 
-      <section class="stop" id="google" aria-labelledby="google-h">
-        <div class="stop-head"><span class="ring" aria-hidden="true"></span><h2 id="google-h">Your Google account</h2></div>
+      <section class="stop is-branch" id="google" style="--stem: var(--green); --l: var(--amber)" aria-labelledby="google-h">
+        <div class="stop-head"><p class="path"><a href="#private"><span class="pb" style="background: var(--green)" aria-hidden="true"></span>Private by default</a><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></p><div class="stop-name"><span class="ring" aria-hidden="true"></span><h2 id="google-h">Your Google account</h2></div></div>
         <p class="lede">Linemark only asks for your Google account if you turn on sync, so your bookmarks can follow you to other computers. Everything else works without it.</p>
         <div class="consent">
           <div class="scope">
@@ -430,12 +470,12 @@
     'chef-hat': '<path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/><path d="M6 17h12"/>',
   };
   const LINES = [
-    { id: 'all', name: 'All bookmarks', color: '#ff5a1f', ink: '#16171a', face: { text: 'L' } },
-    { id: 'reading', name: 'Reading', color: '#2f5bd8', ink: '#fff', face: { icon: 'book-open' } },
-    { id: 'design', name: 'Design', color: '#c2255c', ink: '#fff', face: { text: 'De' } },
-    { id: 'travel', name: 'Travel', color: '#0b7a75', ink: '#fff', face: { icon: 'train-front' } },
-    { id: 'cooking', name: 'Cooking', color: '#f0a800', ink: '#16171a', face: { icon: 'chef-hat' } },
-    { id: 'work', name: 'Work', color: '#7048e8', ink: '#fff', face: { emoji: '🗂️' } },
+    { id: 'all', name: 'All bookmarks', color: 'var(--brand)', ink: 'var(--brand-ink)', face: { text: 'L' } },
+    { id: 'reading', name: 'Reading', color: 'var(--cobalt)', ink: 'var(--on-line)', face: { icon: 'book-open' } },
+    { id: 'design', name: 'Design', color: 'var(--magenta)', ink: 'var(--on-line)', face: { text: 'De' } },
+    { id: 'travel', name: 'Travel', color: 'var(--teal)', ink: 'var(--on-line)', face: { icon: 'train-front' } },
+    { id: 'cooking', name: 'Cooking', color: 'var(--amber)', ink: 'var(--brand-ink)', face: { icon: 'chef-hat' } },
+    { id: 'work', name: 'Work', color: 'var(--violet)', ink: 'var(--on-line)', face: { emoji: '🗂️' } },
   ];
   const BOOKMARKS = [
     { line: 'reading', title: "Butterick's Practical Typography", url: 'https://practicaltypography.com/', tags: ['type'], text: 'A free online guide to typography for writers, covering point size, line length, line spacing and choosing fonts.' },
@@ -552,7 +592,10 @@
     if (i === at) return;
     at = i;
     links.forEach((a, k) => (k === i ? a.setAttribute('aria-current', 'location') : a.removeAttribute('aria-current')));
-    train.style.setProperty('--y', `${links[i].offsetTop}px`);
+    const r = route.getBoundingClientRect(), d = links[i].querySelector('.dot').getBoundingClientRect();
+    train.style.setProperty('--x', `${d.left - r.left - 4}px`);
+    train.style.setProperty('--y', `${d.top - r.top - 12}px`);
+    train.style.setProperty('--tl', getComputedStyle(links[i]).getPropertyValue('--l'));
   }
   function locate() {
     const line = window.innerHeight * 0.4;
