@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Linemark · Bookmarks on lines</title>
-<meta name="description" content="Linemark is a bookmark manager for Chrome. Your bookmarks sit on colour-coded lines, full-text search finds any page by its words, and a link checker catches broken links. Local by default; sync optional.">
+<meta name="description" content="Linemark is a bookmark manager for Chrome and Edge. Your bookmarks sit on colour-coded lines, full-text search finds any page by its words, and a link checker catches broken links. Local by default; sync optional.">
 <meta property="og:title" content="Linemark · Bookmarks on lines">
-<meta property="og:description" content="A bookmark manager for Chrome, drawn like a transit map. Local by default; sync optional.">
+<meta property="og:description" content="A bookmark manager for Chrome and Edge, drawn like a transit map. Local by default; sync optional.">
 <meta property="og:image" content="https://ey4o.github.io/linemark-site/images/og.png">
 <meta property="og:type" content="website">
 <link rel="icon" href="images/icon.png">
@@ -101,6 +101,9 @@
   .band-foot { margin-top: auto; padding-top: 28px; }
   .band-foot .btn { width: 100%; justify-content: flex-start; padding-left: 20px; }
   .band-foot p { color: var(--band-ink-2); font-size: 0.8125rem; line-height: 1.5; margin-top: 12px; }
+  /* the other store, quietly under the band's button */
+  .band-foot .alt-store { display: inline-block; margin-top: 10px; padding: 4px 0; color: var(--band-ink); font-size: 0.875rem; font-weight: 600; text-decoration: underline; text-decoration-color: var(--band-rule); text-underline-offset: 3px; }
+  .band-foot .alt-store:hover { text-decoration-color: currentColor; }
 
   main { padding: 32px 40px 0; min-width: 0; }
   .col { max-width: 1120px; margin: 0 auto; }
@@ -363,7 +366,7 @@
     .wordmark { min-height: 44px; }
     .wordmark { font-size: 1.25rem; }
     .wordmark .b { width: 28px; height: 28px; font-size: 0.9375rem; }
-    .route, .band-foot p { display: none; }
+    .route, .band-foot p, .band-foot .alt-store { display: none; }
     .band-foot { margin: 0; padding: 0; }
     .band-foot .btn { width: auto; height: 44px; padding: 0 16px 0 18px; font-size: 0.9375rem; }
     main { padding: 16px 16px 0; }
@@ -464,6 +467,7 @@
     </nav>
     <div class="band-foot">
       <a class="btn btn-p" href="https://chromewebstore.google.com/detail/laapaiiaipeoilipnbhpjmjbdkomhjln" rel="noopener"><span class="plus" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>Add to Chrome</a>
+      <a class="alt-store" href="https://microsoftedge.microsoft.com/addons/detail/linemark-%E2%80%94-bookmark-manag/dmcbfeidokchcjodabdggmgjcjmebbdg" rel="noopener">Also for Microsoft Edge</a>
       <p>Free. No account. Nothing leaves your computer unless you turn on sync.</p>
     </div>
   </aside>
@@ -472,9 +476,10 @@
     <div class="col">
       <header class="sign" id="top">
         <h1>Bookmarks on lines.</h1>
-        <p class="lede">Linemark is a bookmark manager for Chrome. It keeps your bookmarks on colour-coded lines, finds any page by the words inside it, and checks for broken links. All of it lives in your browser.</p>
+        <p class="lede">Linemark is a bookmark manager for Chrome and Edge. It keeps your bookmarks on colour-coded lines, finds any page by the words inside it, and checks for broken links. All of it lives in your browser.</p>
         <div class="actions">
           <a class="btn btn-p" href="https://chromewebstore.google.com/detail/laapaiiaipeoilipnbhpjmjbdkomhjln" rel="noopener">Add to Chrome</a>
+          <a class="btn btn-s" href="https://microsoftedge.microsoft.com/addons/detail/linemark-%E2%80%94-bookmark-manag/dmcbfeidokchcjodabdggmgjcjmebbdg" rel="noopener">Get it for Edge</a>
           <a class="btn btn-s" href="privacy.html">Privacy policy</a>
         </div>
         <canvas class="scene" id="scene" aria-hidden="true"></canvas>
@@ -529,8 +534,8 @@
             <div data-shot="highlights"><dt>Highlights and images</dt><dd>Right-click selected text to keep it as a highlight of the page, or right-click an image to save it, stored on your computer with the page it came from.</dd></div>
             <div data-shot="lines"><dt>Several lines</dt><dd>A link can stop on several lines at once, like an interchange.</dd></div>
             <div data-shot="tabs"><dt>Tabs and tab groups</dt><dd>Save a whole window of research in one go, keep its tab groups as lines, or open a line as a tab group in its colour.</dd></div>
-            <div data-shot="suggest"><dt>Suggestions</dt><dd>Where Chrome offers its built-in AI, Linemark can suggest a line, tags and a summary, worked out on your computer.</dd></div>
-            <div data-shot="import"><dt>Chrome bookmarks</dt><dd>Import them in one click. Folders become lines.</dd></div>
+            <div data-shot="suggest"><dt>Suggestions</dt><dd>Where your browser offers built-in AI, Linemark can suggest a line, tags and a summary, worked out on your computer.</dd></div>
+            <div data-shot="import"><dt>Bookmarks you have</dt><dd>Import Chrome bookmarks or Edge favorites in one click. Folders become lines.</dd></div>
           </dl>
           <figure class="shot popup" data-swap="save">
             <div class="stage"><img src="images/popup.png" width="380" height="390" alt="The Linemark popup after saving a page: a cover preview, the page title, fields for tags and a note, and a Done button." loading="lazy"></div>
@@ -546,7 +551,7 @@
           <dl class="rows swap">
             <div data-shot="default"><dt>Full text</dt><dd>Titles, tags, notes and the words on the page itself.</dd></div>
             <div data-shot="filters"><dt>Filters</dt><dd><span class="chip">#tag</span><span class="chip">site:</span><span class="chip">type:video</span><span class="chip">is:fav</span><span class="chip">is:broken</span></dd></div>
-            <div data-shot="omnibox"><dt>Address bar</dt><dd>Type <kbd>lm</kbd> (lower-case L, M), then <kbd>Space</kbd>, to search Linemark from Chrome's address bar.</dd></div>
+            <div data-shot="omnibox"><dt>Address bar</dt><dd>Type <kbd>lm</kbd> (lower-case L, M), then <kbd>Space</kbd>, to search Linemark from the address bar.</dd></div>
             <div data-shot="smart"><dt>Smart lines</dt><dd>Keep a search, like <span class="chip in-text">#tag</span> or <span class="nowrap"><span class="chip in-text">site:</span>,</span> as a line that fills itself.</dd></div>
             <div data-shot="departures"><dt>Departures</dt><dd>Give a link a day to come back to, and it waits on the Departures board on that day.</dd></div>
             <div data-shot="views"><dt>Five views</dt><dd>Cards, list, compact headlines, a moodboard, and a network map that draws your library as a transit map, each link a station in the shape of its kind.</dd></div>
@@ -585,7 +590,7 @@
           <div><dt><span class="b" aria-hidden="true"><svg viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>Accounts and tracking</dt><dd><strong>None.</strong> No sign-up, no analytics, no ads, no crash reporting.</dd></div>
           <div><dt><span class="b" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>Going online</dt><dd>Only when you ask: saving a page, checking links or fetching previews. Linemark then talks to those websites directly.</dd></div>
           <div><dt><span class="b" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg></span>Sync</dt><dd><strong>Off unless you turn it on.</strong> Then your library is encrypted on your device with your passphrase before it goes to your own Google Drive.</dd></div>
-          <div><dt><span class="b" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></svg></span>Leaving</dt><dd>Export to HTML, which Chrome can import, or take a full backup, any time.</dd></div>
+          <div><dt><span class="b" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></svg></span>Leaving</dt><dd>Export to HTML, which any browser can import, or take a full backup, any time.</dd></div>
         </dl>
       </section>
 
@@ -608,10 +613,11 @@
       </section>
 
       <section class="terminus" id="install" aria-labelledby="install-h">
-        <h2 id="install-h"><span class="b" aria-hidden="true"><span>L</span></span>Add Linemark to Chrome</h2>
-        <p>Free, with no account. Edge, Brave and Vivaldi can install it from the Chrome Web Store too.</p>
+        <h2 id="install-h"><span class="b" aria-hidden="true"><span>L</span></span>Add Linemark to your browser</h2>
+        <p>Free, with no account. Brave, Vivaldi and other Chromium browsers install it from the Chrome Web Store.</p>
         <div class="actions">
           <a class="btn btn-p" href="https://chromewebstore.google.com/detail/laapaiiaipeoilipnbhpjmjbdkomhjln" rel="noopener"><span class="plus" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>Add to Chrome</a>
+          <a class="btn btn-s" href="https://microsoftedge.microsoft.com/addons/detail/linemark-%E2%80%94-bookmark-manag/dmcbfeidokchcjodabdggmgjcjmebbdg" rel="noopener">Get it for Edge</a>
           <a class="btn btn-s" href="privacy.html">Privacy policy</a>
         </div>
         <div class="stripe" aria-hidden="true"><i style="background:var(--brand)"></i><i style="background:var(--cobalt)"></i><i style="background:var(--magenta)"></i><i style="background:var(--teal)"></i><i style="background:var(--amber)"></i></div>
@@ -877,13 +883,13 @@
   const S = (src, cap) => ({ src: `images/home/${src}.webp`, cap });
   const SHOTS = {
     keyboard: S('save-keyboard', 'Two shortcuts: save the page you’re on, or open your library.'),
-    rightclick: S('save-rightclick', 'Chrome’s right-click menu, with Save page to Linemark.'),
+    rightclick: S('save-rightclick', 'The browser’s right-click menu, with Save page to Linemark.'),
     branches: S('save-branches', 'Typing Cooking/Baking makes a Baking branch under Cooking.'),
     highlights: S('save-highlights', 'Text selected on a page, kept as a highlight of it.'),
     lines: S('save-lines', 'A link on three lines carries each line’s bullet.'),
     tabs: S('save-tabs', 'A line’s menu: open its links as a tab group in its colour.'),
-    suggest: S('save-suggest', 'Suggestions from Chrome’s built-in AI: a line, tags and a summary.'),
-    import: S('save-import', 'Settings: import your Chrome bookmarks, or keep tab groups as lines.'),
+    suggest: S('save-suggest', 'Suggestions from the browser’s built-in AI: a line, tags and a summary.'),
+    import: S('save-import', 'Settings: import your browser’s bookmarks, or keep tab groups as lines.'),
     filters: S('find-filters', 'A tag has its own stop: every link tagged #japan.'),
     omnibox: S('find-omnibox', 'Type lm and Space in the address bar to search Linemark.'),
     smart: S('find-smart', 'A smart line keeps the search type:video, and fills itself.'),
