@@ -68,7 +68,7 @@
   </section>
 
   <h2>What Linemark stores, and where</h2>
-  <p>Everything below is kept in Linemark’s storage inside your Chrome profile (IndexedDB and extension storage) on your device:</p>
+  <p>Everything below is kept in Linemark’s storage inside your browser profile (IndexedDB and extension storage) on your device:</p>
   <ul>
     <li><strong>Bookmarks:</strong> web addresses, titles, descriptions, your notes and tags, favorites, and which line (collection) each one belongs to.</li>
     <li><strong>Cover images:</strong> a screenshot of the page you saved, or the page’s own cover image, downloaded once.</li>
@@ -82,21 +82,21 @@
   <p>Linemark makes network requests only for the features below, and only when you use them.</p>
   <div class="table"><table>
     <tr><th scope="row">Saving a page</th><td>Linemark reads the open tab’s title, description, cover-image address and readable text, and takes a screenshot of the visible tab. All of this happens on your device. If the page names a cover image, Linemark downloads that image once from the site that hosts it and stores it locally.</td></tr>
-    <tr><th scope="row">Link checks, previews, full-text indexing, Refresh (optional)</th><td>Chrome asks for site access first. Linemark then requests each saved page directly from its own website, much as your browser does when you visit it. Your cookies aren’t sent. The website sees an ordinary request from your browser, including your IP address.</td></tr>
+    <tr><th scope="row">Link checks, previews, full-text indexing, Refresh (optional)</th><td>Your browser asks for site access first. Linemark then requests each saved page directly from its own website, much as your browser does when you visit it. Your cookies aren’t sent. The website sees an ordinary request from your browser, including your IP address.</td></tr>
     <tr><th scope="row">Saving a highlight</th><td>Right-click on selected text, or open the toolbar popup with text selected: Linemark keeps that text with the page’s bookmark, on your device.</td></tr>
     <tr><th scope="row">Saving an image</th><td>Right-click on an image: Linemark downloads that one image once from the site that hosts it and stores it locally, with the address of the page it was on.</td></tr>
     <tr><th scope="row">Optional sync</th><td>See <a href="#sync">Optional encrypted sync</a> below.</td></tr>
-    <tr><th scope="row">Site icons</th><td>Linemark uses Chrome’s own local cache of site icons. No icon service is contacted.</td></tr>
+    <tr><th scope="row">Site icons</th><td>Linemark uses your browser’s own local cache of site icons. No icon service is contacted.</td></tr>
     <tr><th scope="row">Find archived copy (optional)</th><td>On a dead link, only when you choose it: Linemark asks the Internet Archive (archive.org) whether it has a copy of that one link, which tells archive.org the link’s address. Nothing else is sent.</td></tr>
-    <tr><th scope="row">Suggestions (optional)</th><td>Only when you click Suggest: uses the AI model built into Chrome, which runs on your computer. The page’s title, address and text go to that local model only; nothing is sent over the network.</td></tr>
-    <tr><th scope="row">Tab groups (optional)</th><td><strong>Open as tab group</strong> opens a line’s links in a coloured Chrome tab group. <strong>Save as lines</strong> reads the titles, colours and tab addresses of the tab groups in your window, on your device, when you choose it.</td></tr>
+    <tr><th scope="row">Suggestions (optional)</th><td>Only when you click Suggest: uses the AI model built into your browser (Chrome’s Gemini Nano, or Edge’s Phi model where offered), which runs on your computer. The page’s title, address and text go to that local model only; nothing is sent over the network.</td></tr>
+    <tr><th scope="row">Tab groups (optional)</th><td><strong>Open as tab group</strong> opens a line’s links in a coloured tab group. <strong>Save as lines</strong> reads the titles, colours and tab addresses of the tab groups in your window, on your device, when you choose it.</td></tr>
   </table></div>
   <p>The library itself never loads anything from the web while you browse it. Fonts, icons and covers all come from the extension or from your local storage.</p>
 
   <h2 id="sync">Optional encrypted sync</h2>
   <p>Sync keeps your library the same across your own computers. It is off unless you turn it on in <strong>Settings → Sync</strong>.</p>
   <ul>
-    <li><strong>Sign-in:</strong> you sign in with your Google account, either through Chrome’s own sign-in or Google’s sign-in window. Google’s privacy policy applies to that sign-in. Linemark asks for one permission only: <code>drive.appdata</code>, which gives access to a private app folder in your Google Drive. Linemark can’t see or change any of your other Drive files.</li>
+    <li><strong>Sign-in:</strong> you sign in with your Google account, either through Chrome’s own sign-in or, in Edge and other browsers, Google’s sign-in window. Google’s privacy policy applies to that sign-in. Linemark asks for one permission only: <code>drive.appdata</code>, which gives access to a private app folder in your Google Drive. Linemark can’t see or change any of your other Drive files.</li>
     <li><strong>Encryption:</strong> before anything leaves your device, your passphrase is turned into an encryption key (PBKDF2-SHA256 with 600,000 iterations, then AES-256-GCM). Your library and images are encrypted with that key on your device. <strong>Google stores only encrypted data</strong>, and without your passphrase no one, including Google or the developer, can read it.</li>
     <li><strong>What syncs:</strong> lines, bookmarks, notes, tags, deletions and stored images. Page text for search isn’t synced; each device rebuilds its own.</li>
     <li><strong>The developer receives nothing.</strong> Data travels only between your device and your own Google Drive.</li>
@@ -119,8 +119,8 @@
     <tr><th scope="row"><code>storage</code>, <code>unlimitedStorage</code></th><td>Keep your library, covers and page text on your device</td></tr>
     <tr><th scope="row"><code>activeTab</code>, <code>scripting</code></th><td>Read the page you choose to save (title, description, cover, text) and take its screenshot</td></tr>
     <tr><th scope="row"><code>contextMenus</code></th><td>Save page, Save link, Save highlight and Save image to Linemark in the right-click menu</td></tr>
-    <tr><th scope="row"><code>bookmarks</code></th><td>Import Chrome’s bookmarks when you ask (read only)</td></tr>
-    <tr><th scope="row"><code>favicon</code></th><td>Show site icons from Chrome’s own cache</td></tr>
+    <tr><th scope="row"><code>bookmarks</code></th><td>Import your browser’s bookmarks (Edge: favorites) when you ask (read only)</td></tr>
+    <tr><th scope="row"><code>favicon</code></th><td>Show site icons from your browser’s own cache</td></tr>
     <tr><th scope="row"><code>tabs</code> (optional)</th><td>Save all open tabs and save tab groups as lines, only when you use them</td></tr>
     <tr><th scope="row"><code>tabGroups</code> (optional)</th><td>Open a line as a tab group, or save your tab groups as lines, only when you use them</td></tr>
     <tr><th scope="row">Access to websites (optional)</th><td>Link checks, previews, full-text indexing and Refresh, only when you turn them on; archive.org, only when you choose <strong>Find archived copy</strong></td></tr>
@@ -131,7 +131,7 @@
   <ul>
     <li><strong>Delete</strong> any bookmark or line at any time. Trash keeps items until you empty it.</li>
     <li><strong>Export</strong> your library whenever you like, as Chrome-compatible HTML or a full JSON backup.</li>
-    <li><strong>Uninstall</strong> Linemark to remove all of its local data. Chrome deletes the extension’s storage.</li>
+    <li><strong>Uninstall</strong> Linemark to remove all of its local data. Your browser deletes the extension’s storage.</li>
     <li><strong>Sync:</strong> <em>Turn off</em> stops syncing on a device. <em>Delete cloud copy</em> removes every Linemark file from your Drive. You can also remove Linemark’s access to your Google account at <a href="https://myaccount.google.com/permissions">myaccount.google.com/permissions</a>.</li>
     <li><strong>Site access:</strong> revoke it in Settings → Health &amp; search, or on Chrome’s extension page.</li>
   </ul>
