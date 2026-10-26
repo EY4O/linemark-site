@@ -1,8 +1,10 @@
-# Linemark site
+# Linemark site (redirects)
 
-The public homepage and privacy policy for Linemark, a local-first bookmark manager for Chrome.
+Linemark's homepage and privacy policy now live at [linemark.eternalpose.io](https://linemark.eternalpose.io/), published from [EY4O/linemark](https://github.com/EY4O/linemark)'s `docs/`.
 
-- Homepage: https://ey4o.github.io/linemark-site/
-- Privacy policy: https://ey4o.github.io/linemark-site/privacy.html
+This repository keeps the old addresses working:
 
-Published copies of `docs/index.html` and `docs/privacy.html` from the Linemark project. Archivo font: SIL Open Font License (`fonts/OFL.txt`).
+- https://ey4o.github.io/linemark-site/ redirects to https://linemark.eternalpose.io/
+- https://ey4o.github.io/linemark-site/privacy.html redirects to https://linemark.eternalpose.io/privacy.html
+
+Keep it while anything still links to the old addresses (store listings, Google's OAuth consent screen, Search Console).
